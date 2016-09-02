@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "outDir": "../../../dist",
+        "rootDir": ".",
+        "emitBOM": true,
+        "newLine": "LF",
+        "sourceMap": false
+    },
+    "files": [
+      "sc2tojson.ts",
+      "../custom_typings/tsd.d.ts"
+    ]
+}
