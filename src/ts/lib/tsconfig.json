@@ -1,16 +1,21 @@
 {
     "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
-        "noImplicitAny": false,
-        "outDir": "../../../dist",
+        "target": "es2015",
+        "module": "es2015",
+        "lib": [
+            "es2015"
+        ],
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitUseStrict": false,
+        "outDir": "../../../lib",
         "rootDir": ".",
-        "emitBOM": true,
+        "emitBOM": false,
         "newLine": "LF",
         "sourceMap": false
-    },
-    "files": [
-      "sc2tojson.ts",
-      "../custom_typings/tsd.d.ts"
-    ]
+    }
 }
