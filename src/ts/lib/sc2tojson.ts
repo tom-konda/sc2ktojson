@@ -1,23 +1,25 @@
 'use strict';
 
-(function (global) {
-  'use strict';
-  const isNode = ('process' in global);
+const sc2toJSON = (() => {
   const LENGTH_OF_EDGE = 128;
   const CHUNK_NAME_LENGTH = 4;
   const CHUNK_SIZE_LENGTH = 4;
 
   const chunkSpecificHandler = {
-    'ALTM' : (chunkData:Uint8Array) => {
-      let altmMap:{}[][] = Array(LENGTH_OF_EDGE).fill(Array(LENGTH_OF_EDGE));
+    'CNAM': (chunkData: Uint8Array) => Array.from(chunkData),
+    'ALTM': (chunkData: Uint8Array) => {
+      let altmMap: {}[][] = Array(LENGTH_OF_EDGE);
       for (let i = 0, x = 0; i < 0x8000; i += 2) {
-        let data = new DataView(chunkData.slice(i, i + 2).buffer).getUint16(0);
+        const data = new DataView(chunkData.slice(i, i + 2).buffer).getUint16(0);
 
-        let mod = i % 0x100;
-        let y = Math.floor(mod / 2);
+        const mod = i % 0x100;
+        const y = Math.floor(mod / 2);
+        if (mod === 0) {
+          altmMap[x] = [];
+        }
 
-        let height = 0x1f & data;
-        let isWater = (data >> 7) & 1;
+        const height = 0x1f & data;
+        const isWater = (data >> 7) & 1;
         altmMap[x][y] = { 'isWater': isWater, 'height': height };
         if (mod === 254) {
           ++x;
@@ -25,17 +27,18 @@
       }
       return altmMap;
     },
-    'XBIT' : (chunkData:Uint8Array) => {
-      let xbitMap:{}[][] = Array(LENGTH_OF_EDGE).fill(Array(LENGTH_OF_EDGE));
+    'XBIT': (chunkData: Uint8Array) => {
+      const xbitMap: {}[][] = Array(LENGTH_OF_EDGE);
       for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
+        xbitMap[y] = [];
         for (let x = 0; x < LENGTH_OF_EDGE; ++x) {
-          let xbitData = getCurrentByteValue(chunkData, y * LENGTH_OF_EDGE + x);
-          let isSalt = xbitData[y * LENGTH_OF_EDGE + x] & 1;
-          let isWaterCovered = (xbitData[y * LENGTH_OF_EDGE + x] >> 2) & 1;
-          let isWaterProvided = (xbitData[y * LENGTH_OF_EDGE + x] >> 4) & 1;
-          let isPiped = (xbitData[y * LENGTH_OF_EDGE + x] >> 5) & 1;
-          let isPowered = (xbitData[y * LENGTH_OF_EDGE + x] >> 6) & 1;
-          xbitMap[x][y] = {
+          const xbitData = getCurrentByteValue(chunkData, x * LENGTH_OF_EDGE + y);
+          const isSalt = xbitData & 1;
+          const isWaterCovered = (xbitData >> 2) & 1;
+          const isWaterProvided = (xbitData >> 4) & 1;
+          const isPiped = (xbitData >> 5) & 1;
+          const isPowered = (xbitData >> 6) & 1
+          xbitMap[y][x] = {
             'isSalt': isSalt,
             'isWaterCovered': isWaterCovered,
             'isWaterProvided': isWaterProvided,
@@ -46,33 +49,33 @@
       }
       return xbitMap;
     },
-    'XBLD' : (chunkData:Uint8Array) => getMapData(chunkData, 1),
-    'XTER' : (chunkData:Uint8Array) => getMapData(chunkData, 1),
-    'XTXT' : (chunkData:Uint8Array) => getMapData(chunkData, 1),
-    'XZON' : (chunkData:Uint8Array) => getMapData(chunkData, 1),
-    'XUND' : (chunkData:Uint8Array) => getMapData(chunkData, 1),
-    'XPLC' : (chunkData:Uint8Array) => getMapData(chunkData, 4),
-    'XFIR' : (chunkData:Uint8Array) => getMapData(chunkData, 4),
-    'XPOP' : (chunkData:Uint8Array) => getMapData(chunkData, 4),
-    'XROG' : (chunkData:Uint8Array) => getMapData(chunkData, 4),
-    'XPLT' : (chunkData:Uint8Array) => getMapData(chunkData, 4),
-    'XCRM' : (chunkData:Uint8Array) => getMapData(chunkData, 2),
-    'XVAL' : (chunkData:Uint8Array) => getMapData(chunkData, 2),
-    'XTRF' : (chunkData:Uint8Array) => getMapData(chunkData, 2),
-    'XLAB' : (chunkData:Uint8Array) => {
-      let labels = Array(0x100);
-      for (let i = 0; i < 0x100; i ++) {
-        let current = i * 25;
+    'XBLD': (chunkData: Uint8Array) => getMapData(chunkData, 1),
+    'XTER': (chunkData: Uint8Array) => getMapData(chunkData, 1),
+    'XTXT': (chunkData: Uint8Array) => getMapData(chunkData, 1),
+    'XZON': (chunkData: Uint8Array) => getMapData(chunkData, 1),
+    'XUND': (chunkData: Uint8Array) => getMapData(chunkData, 1),
+    'XPLC': (chunkData: Uint8Array) => getMapData(chunkData, 4),
+    'XFIR': (chunkData: Uint8Array) => getMapData(chunkData, 4),
+    'XPOP': (chunkData: Uint8Array) => getMapData(chunkData, 4),
+    'XROG': (chunkData: Uint8Array) => getMapData(chunkData, 4),
+    'XPLT': (chunkData: Uint8Array) => getMapData(chunkData, 4),
+    'XCRM': (chunkData: Uint8Array) => getMapData(chunkData, 2),
+    'XVAL': (chunkData: Uint8Array) => getMapData(chunkData, 2),
+    'XTRF': (chunkData: Uint8Array) => getMapData(chunkData, 2),
+    'XLAB': (chunkData: Uint8Array) => {
+      const labels: number[][] = Array(0x100);
+      for (let i = 0; i < 0x100; i++) {
+        const current = i * 25;
         labels[i] = Array.from(chunkData.slice(current, current + 25))
       }
       return labels;
     },
-    'XMIC' : (chunkData:Uint8Array) => {
+    'XMIC': (chunkData: Uint8Array) => {
       const MAX_MICROSIM_NUM = 150;
       let microsims = Array(MAX_MICROSIM_NUM);
       for (let i = 0; i < MAX_MICROSIM_NUM; i++) {
-        let current = i * 8;
-        let currentMicroSim = chunkData.slice(current, current + 8);
+        const current = i * 8;
+        const currentMicroSim = chunkData.slice(current, current + 8);
         /*
           #1 : Bus Sim
           #2 : Railway Sim
@@ -91,44 +94,44 @@
       }
       return microsims;
     },
-    'XTHG' : (chunkData:Uint8Array) => Array.from(chunkData),
-    'XGRP' : (chunkData:Uint8Array) => Array.from(chunkData),
-    'MISC' : (chunkData:Uint8Array) => {
+    'XTHG': (chunkData: Uint8Array) => Array.from(chunkData),
+    'XGRP': (chunkData: Uint8Array) => Array.from(chunkData),
+    'MISC': (chunkData: Uint8Array) => {
       const MAX_MISC_NUM = 1200;
-      let miscs = Array(MAX_MISC_NUM);
+      const miscs = Array(MAX_MISC_NUM);
       for (let i = 0; i < MAX_MISC_NUM; i++) {
-        let current = i * 4;
-        let currentMisc = chunkData.slice(current, current + 4);
-        
+        const current = i * 4;
+        const currentMisc = chunkData.slice(current, current + 4);
+
         miscs[i] = Array.from(currentMisc);
       }
       return miscs;
     },
-    'TMPL' : (chunkData:Uint8Array) => Array.from(chunkData),
-    'TEXT' : (chunkData:Uint8Array) => {
+    'TMPL': (chunkData: Uint8Array) => Array.from(chunkData),
+    'TEXT': (chunkData: Uint8Array) => {
       const textTypeValue = getCurrentByteValue(chunkData, 0);
       let textType = '';
       switch (textTypeValue) {
-        case 0x80 : 
+        case 0x80:
           textType = 'postSelect';
           break;
-        case 0x81 :
+        case 0x81:
           textType = 'preSelect';
           break;
         default:
       }
       const textData = Array.from(chunkData.slice(1));
       return {
-        textType : textType,
-        textData : textData,
+        textType: textType,
+        textData: textData,
       }
     },
-    'SCEN' : (chunkData:Uint8Array) => {
-      let scenData = {};
+    'SCEN': (chunkData: Uint8Array) => {
+      let scenData: { [key: string]: number | { x: number, y: number } } = {};
       scenData['disaster'] = new DataView(chunkData.slice(4, 6).buffer).getUint16(0);
       scenData['disasterCoordinate'] = {
-        x : getCurrentByteValue(chunkData, 6),
-        y : getCurrentByteValue(chunkData, 7),
+        x: getCurrentByteValue(chunkData, 6),
+        y: getCurrentByteValue(chunkData, 7),
       };
       scenData['limit'] = new DataView(chunkData.slice(8, 10).buffer).getUint16(0);
       scenData['condPop'] = new DataView(chunkData.slice(10, 14).buffer).getUint32(0);
@@ -149,46 +152,49 @@
       }
       return scenData;
     },
-    'PICT' : (chunkData:Uint8Array) => {
+    'PICT': (chunkData: Uint8Array) => {
       const END_OF_PICTURE_ROW = 0;
       const width = getCurrentByteValue(chunkData, 4);
       const height = getCurrentByteValue(chunkData, 6);
-      let pictureArrayData = Array.from(chunkData.slice(8));
+      const pictureArrayData = Array.from(chunkData.slice(8));
       let pictureData = [];
       let offset = 0;
       let findIndex = pictureArrayData.indexOf(END_OF_PICTURE_ROW, offset);
-      
-      while(findIndex !== -1) {
-        let row = pictureArrayData.slice(offset, findIndex);
+
+      while (findIndex !== -1) {
+        const row = pictureArrayData.slice(offset, findIndex);
         pictureData.push(row);
         offset = findIndex + 1;
         findIndex = pictureArrayData.indexOf(END_OF_PICTURE_ROW, offset);
       }
 
       return {
-        width : width,
-        height : height,
-        picture : pictureData,
+        width: width,
+        height: height,
+        picture: pictureData,
       }
     }
   }
 
-  let getMapData = (chunk:Uint8Array, tileSize:number) => {
+  let getMapData = (chunk: Uint8Array, tileSize: number) => {
     const tileLength = LENGTH_OF_EDGE / tileSize;
-    let map:number[][] = Array(tileLength).fill(Array(tileLength));
+    let map: number[][] = Array(tileLength);
     for (let y = 0; y < tileLength; ++y) {
       for (let x = 0; x < tileLength; ++x) {
+        if (y === 0) {
+          map[x] = [];
+        }
         map[x][y] = getCurrentByteValue(chunk, y * tileLength + x);
       }
     }
     return map;
   }
 
-  let getCurrentByteValue = (chunk:Uint8Array, pos:number) => {
+  let getCurrentByteValue = (chunk: Uint8Array, pos: number) => {
     return new DataView(chunk.slice(pos, pos + 1).buffer).getUint8(0);
   };
 
-  function getChunkName (buffer:Uint8Array):string {
+  function getChunkName(buffer: Uint8Array): string {
     const chunkList = [
       'CNAM', 'ALTM', 'XBIT', 'XBLD', 'XTER', 'XTXT', 'XMIC',
       'XZON', 'XUND', 'XLAB', 'MISC', 'XPLC', 'XFIR', 'TMPL',
@@ -213,7 +219,7 @@
     return '';
   }
 
-  function getChuckSize(buffer:Uint8Array):number {
+  function getChuckSize(buffer: Uint8Array): number {
     if (buffer.byteLength === 4) {
       let size = new DataView(buffer.buffer).getUint32(0);
       if (size > 0) {
@@ -226,7 +232,7 @@
     return -1;
   }
 
-  function decompressChunkData(chunkData:Uint8Array, chunkName:string):Uint8Array {
+  function decompressChunkData(chunkData: Uint8Array, chunkName: string): Uint8Array {
     const decompressedChunkSize = {
       MISC: 4800,
       XTER: 16384,
@@ -250,26 +256,28 @@
     }
 
     let decompressedChunkData = new Uint8Array(decompressedChunkSize[chunkName]);
-    for (let i = 0, lastOffset = 0, length = chunkData.byteLength; i < length; ++i) {
-      let j = 0;
+    for (let i = 0, lastOffset = 0, length = chunkData.byteLength; i < length;) {
       let currentValue = getCurrentByteValue(chunkData, i);
       if (currentValue > 128) {
-        let length = currentValue - 127;
+        const length = currentValue - 127;
         ++i;
-        decompressedChunkData.set([].fill(getCurrentByteValue(chunkData, i), 0, length), lastOffset);
+        decompressedChunkData.fill(getCurrentByteValue(chunkData, i), lastOffset, lastOffset + length);
+        lastOffset += length;
+        ++i;
       }
       else {
-        let count = currentValue;
-        for (j; j < count; ++j, ++lastOffset) {
-          ++i;
-          decompressedChunkData.set([getCurrentByteValue(chunkData, i)], lastOffset);
-        }
+        const length = currentValue;
+        i++;
+        const data = chunkData.slice(i, i + length);
+        decompressedChunkData.set(data, lastOffset);
+        lastOffset += length;
+        i += length;
       }
     }
     return decompressedChunkData;
   }
 
-  function getChunkType(name:string) {
+  function getChunkType(name: string) {
     const SCENARIO_CHUNK_LIST = ['TMPL', 'PICT', 'TEXT', 'SCEN'];
     const STATISTIC_CHUNK_LIST = [
       'XPLC', 'XFIR', 'XPOP', 'XROG', 'XPLT', 'XCRM', 'XVAL', 'XTRF',
@@ -293,9 +301,10 @@
   }
 
   function getSurfaceMap(tileDatas) {
-    let surfaceMap:string[][] = Array(LENGTH_OF_EDGE).fill(Array(LENGTH_OF_EDGE));
-    for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
-      for (let x = 0; x < LENGTH_OF_EDGE; ++x) {
+    let surfaceMap: string[][] = Array(LENGTH_OF_EDGE);
+    for (let x = 0; x < LENGTH_OF_EDGE; ++x) {
+      surfaceMap[x] = [];
+      for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
         if (tileDatas.xbld[x][y] !== 0) {
           surfaceMap[x][y] = 'building';
         }
@@ -310,7 +319,7 @@
     return surfaceMap;
   }
 
-  function chunkSpecificProc(chunkData:Uint8Array, chunkName:string) {
+  function chunkSpecificProc(chunkData: Uint8Array, chunkName: string) {
     let chunkList = Object.getOwnPropertyNames(chunkSpecificHandler);
     if (chunkList.indexOf(chunkName) === -1) {
       return;
@@ -320,35 +329,35 @@
     }
   }
 
-  function getChunkBinaryData(data:Uint8Array, start, size):Uint8Array {
+  function getChunkBinaryData(data: Uint8Array, start, size): Uint8Array {
     return data.slice(start, start + size);
   }
 
-  function analyzeData(data:ArrayBuffer) {
+  function analyzeData(data: ArrayBuffer) {
     const UNCOMPRESSED_CHUNK_LIST = ['CNAM', 'ALTM', 'TMPL', 'SCEN', 'TEXT', 'PICT'];
 
-    let i:number, x:number, y:number, cnt:number;
-    let cityData:any = {
-      'scenario' : {},
-      'tile' : {},
-      'statistic' : {},
-      'city' : {},
+    let i: number, x: number, y: number, cnt: number;
+    let cityData: any = {
+      'scenario': {},
+      'tile': {},
+      'statistic': {},
+      'city': {},
     };
     let offset = 0;
-  
-    let uint8CityData = new Uint8Array(data);
-    
+
+    const uint8CityData = new Uint8Array(data);
+
     let flag = true;
-    while(flag) {
-      let chunkName = getChunkName(uint8CityData.slice(offset, offset + CHUNK_NAME_LENGTH));
+    while (flag) {
+      const chunkName = getChunkName(uint8CityData.slice(offset, offset + CHUNK_NAME_LENGTH));
       if (chunkName === '') {
         flag = false;
         continue
       }
-      else if(chunkName === 'SCDH') {
+      else if (chunkName === 'SCDH') {
         offset += CHUNK_NAME_LENGTH;
       }
-      else if(chunkName === 'FORM'){
+      else if (chunkName === 'FORM') {
         offset += 8;
       }
       else {
@@ -391,14 +400,9 @@
     cityData.fileSize = uint8CityData.byteLength;
     return JSON.stringify(cityData);
   }
-
-  let _Sc2toJSON = {
+  return {
     analyzeData: analyzeData,
   }
+})();
 
-  if (isNode) {
-    module.exports = _Sc2toJSON;
-  }
-  global.Sc2toJSON = _Sc2toJSON;
-
-})((this || 0).self || global);
+export default sc2toJSON;
