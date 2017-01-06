@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "es2015",
+        "lib": [
+            "es2015"
+        ],
+        "typeRoots": [
+            "node_modules/@types",
+            "src/ts/declaration"
+        ],
+        "types": [
+            "node",
+            "commander",
+            "sc2tojson"
+        ],
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitUseStrict": false,
+        "outDir": "../../../bin",
+        "rootDir": ".",
+        "emitBOM": false,
+        "newLine": "LF",
+        "sourceMap": false
+    }
+}

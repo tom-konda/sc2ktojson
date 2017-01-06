@@ -13,6 +13,7 @@
   "author": "tom-konda",
   "license": "MIT",
   "devDependencies": {
+    "@types/commander": "^2.3.31",
     "@types/node": "^6.0.52",
     "espower-typescript": "^7.0.0",
     "jsdom": "^9.4.5",
