@@ -87,9 +87,6 @@ const sc2toJSON = (() => {
           #8 : Library Sim
           #9 : Marina Sim
         */
-        // if (microsims.length === 2 || microsims.length === 3) {
-        //   microsims[microsims.length] = getInteger(i, 8, xmicData);
-        // }
         microsims[i] = Array.from(currentMicroSim);
       }
       return microsims;
@@ -306,13 +303,13 @@ const sc2toJSON = (() => {
       surfaceMap[x] = [];
       for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
         if (tileDatas.xbld[x][y] !== 0) {
-          surfaceMap[x][y] = 'building';
+          surfaceMap[x][y] = 'xbld';
         }
         else if (tileDatas.xzon[x][y] !== 0 && tileDatas.xzon[x][y] < 15) {
-          surfaceMap[x][y] = 'zone';
+          surfaceMap[x][y] = 'xzon';
         }
         else {
-          surfaceMap[x][y] = 'terrain';
+          surfaceMap[x][y] = 'xter';
         }
       }
     }
@@ -329,14 +326,13 @@ const sc2toJSON = (() => {
     }
   }
 
-  function getChunkBinaryData(data: Uint8Array, start, size): Uint8Array {
+  function getChunkBinaryData(data: Uint8Array, start: number, size: number): Uint8Array {
     return data.slice(start, start + size);
   }
 
   function analyzeData(data: ArrayBuffer) {
     const UNCOMPRESSED_CHUNK_LIST = ['CNAM', 'ALTM', 'TMPL', 'SCEN', 'TEXT', 'PICT'];
 
-    let i: number, x: number, y: number, cnt: number;
     let cityData: any = {
       'scenario': {},
       'tile': {},
