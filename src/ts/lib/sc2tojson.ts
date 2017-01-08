@@ -8,7 +8,7 @@ const sc2toJSON = (() => {
   const chunkSpecificHandler = {
     'CNAM': (chunkData: Uint8Array) => Array.from(chunkData),
     'ALTM': (chunkData: Uint8Array) => {
-      let altmMap: {}[][] = Array(LENGTH_OF_EDGE);
+      let altmMap: ALTMTileDataFormat[][] = Array(LENGTH_OF_EDGE);
       for (let i = 0, x = 0; i < 0x8000; i += 2) {
         const data = new DataView(chunkData.slice(i, i + 2).buffer).getUint16(0);
 
@@ -28,7 +28,7 @@ const sc2toJSON = (() => {
       return altmMap;
     },
     'XBIT': (chunkData: Uint8Array) => {
-      const xbitMap: {}[][] = Array(LENGTH_OF_EDGE);
+      const xbitMap: XBitTileDataFormat[][] = Array(LENGTH_OF_EDGE);
       for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
         xbitMap[y] = [];
         for (let x = 0; x < LENGTH_OF_EDGE; ++x) {
@@ -72,7 +72,7 @@ const sc2toJSON = (() => {
     },
     'XMIC': (chunkData: Uint8Array) => {
       const MAX_MICROSIM_NUM = 150;
-      let microsims = Array(MAX_MICROSIM_NUM);
+      let microsims: number[][] = Array(MAX_MICROSIM_NUM);
       for (let i = 0; i < MAX_MICROSIM_NUM; i++) {
         const current = i * 8;
         const currentMicroSim = chunkData.slice(current, current + 8);
@@ -95,7 +95,7 @@ const sc2toJSON = (() => {
     'XGRP': (chunkData: Uint8Array) => Array.from(chunkData),
     'MISC': (chunkData: Uint8Array) => {
       const MAX_MISC_NUM = 1200;
-      const miscs = Array(MAX_MISC_NUM);
+      const miscs: number[][] = Array(MAX_MISC_NUM);
       for (let i = 0; i < MAX_MISC_NUM; i++) {
         const current = i * 4;
         const currentMisc = chunkData.slice(current, current + 4);
@@ -105,7 +105,7 @@ const sc2toJSON = (() => {
       return miscs;
     },
     'TMPL': (chunkData: Uint8Array) => Array.from(chunkData),
-    'TEXT': (chunkData: Uint8Array) => {
+    'TEXT': (chunkData: Uint8Array): TEXTDataFormat => {
       const textTypeValue = getCurrentByteValue(chunkData, 0);
       let textType = '';
       switch (textTypeValue) {
@@ -123,7 +123,7 @@ const sc2toJSON = (() => {
         textData: textData,
       }
     },
-    'SCEN': (chunkData: Uint8Array) => {
+    'SCEN': (chunkData: Uint8Array): SCENDataFormat => {
       let scenData: { [key: string]: number | { x: number, y: number } } = {};
       scenData['disaster'] = new DataView(chunkData.slice(4, 6).buffer).getUint16(0);
       scenData['disasterCoordinate'] = {
@@ -149,7 +149,7 @@ const sc2toJSON = (() => {
       }
       return scenData;
     },
-    'PICT': (chunkData: Uint8Array) => {
+    'PICT': (chunkData: Uint8Array): PICTDataFormat => {
       const END_OF_PICTURE_ROW = 0;
       const width = getCurrentByteValue(chunkData, 4);
       const height = getCurrentByteValue(chunkData, 6);
@@ -229,7 +229,7 @@ const sc2toJSON = (() => {
     return -1;
   }
 
-  function decompressChunkData(chunkData: Uint8Array, chunkName: string): Uint8Array {
+  function decompressChunkData(chunkData: Uint8Array, chunkName: SC2KCompressedChunkName): Uint8Array {
     const decompressedChunkSize = {
       MISC: 4800,
       XTER: 16384,
@@ -274,7 +274,7 @@ const sc2toJSON = (() => {
     return decompressedChunkData;
   }
 
-  function getChunkType(name: string) {
+  function getChunkType(name: string): SC2KChunkType {
     const SCENARIO_CHUNK_LIST = ['TMPL', 'PICT', 'TEXT', 'SCEN'];
     const STATISTIC_CHUNK_LIST = [
       'XPLC', 'XFIR', 'XPOP', 'XROG', 'XPLT', 'XCRM', 'XVAL', 'XTRF',
@@ -297,15 +297,15 @@ const sc2toJSON = (() => {
     }
   }
 
-  function getSurfaceMap(tileDatas) {
-    let surfaceMap: string[][] = Array(LENGTH_OF_EDGE);
+  function getSurfaceMap(tileDatas: tileKeyValueFormat): surfaceDataFormat[][] {
+    let surfaceMap = Array(LENGTH_OF_EDGE);
     for (let x = 0; x < LENGTH_OF_EDGE; ++x) {
       surfaceMap[x] = [];
       for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
-        if (tileDatas.xbld[x][y] !== 0) {
+        if (tileDatas['xbld'][x][y] !== 0) {
           surfaceMap[x][y] = 'xbld';
         }
-        else if (tileDatas.xzon[x][y] !== 0 && tileDatas.xzon[x][y] < 15) {
+        else if (tileDatas['xzon'][x][y] !== 0 && tileDatas['xzon'][x][y] < 15) {
           surfaceMap[x][y] = 'xzon';
         }
         else {
@@ -318,11 +318,11 @@ const sc2toJSON = (() => {
 
   function chunkSpecificProc(chunkData: Uint8Array, chunkName: string) {
     let chunkList = Object.getOwnPropertyNames(chunkSpecificHandler);
-    if (chunkList.indexOf(chunkName) === -1) {
-      return;
+    if (chunkList.indexOf(chunkName) !== -1) {
+      return undefined;
     }
     else {
-      return chunkSpecificHandler[chunkName](chunkData);
+      return chunkSpecificHandler[<SC2KSpecHandlarExistChunkName>chunkName](chunkData);
     }
   }
 
@@ -333,11 +333,12 @@ const sc2toJSON = (() => {
   function analyzeData(data: ArrayBuffer) {
     const UNCOMPRESSED_CHUNK_LIST = ['CNAM', 'ALTM', 'TMPL', 'SCEN', 'TEXT', 'PICT'];
 
-    let cityData: any = {
+    let cityData: SC2KtoJSONOutputFormat = {
       'scenario': {},
       'tile': {},
       'statistic': {},
       'city': {},
+      fileSize: 0,
     };
     let offset = 0;
 
@@ -374,25 +375,26 @@ const sc2toJSON = (() => {
 
         offset += chunkSize;
         if (UNCOMPRESSED_CHUNK_LIST.indexOf(chunkName) === -1) {
-          chunkData = decompressChunkData(chunkData, chunkName);
+          chunkData = decompressChunkData(chunkData, <SC2KCompressedChunkName>chunkName);
         }
-        let result = chunkSpecificProc(chunkData, chunkName);
-        let chunkType = getChunkType(chunkName);
-        if (chunkType === 'scenario' && chunkName === 'TEXT') {
-          cityData[chunkType][`${result.textType}Text`] = result;
+        let result = chunkSpecificProc(chunkData, <SC2KSpecHandlarExistChunkName>chunkName);
+        if (result === undefined) {
+          flag = false;
+          continue;
         }
         else {
-          cityData[chunkType][chunkName.toLowerCase()] = result;
+          let chunkType = getChunkType(chunkName);
+          if (chunkType === 'scenario' && chunkName === 'TEXT') {
+            (<SC2KChunkTypeKeyValueFormat>cityData[chunkType])[`${(<TEXTDataFormat>result).textType}Text`] = <TEXTDataFormat>result;
+          }
+          else {
+            (<SC2KChunkTypeKeyValueFormat>cityData[chunkType])[chunkName.toLowerCase()] = <SC2KChunkTypeValueFormat>result;
+          }
         }
       }
     }
 
-    if (cityData.tile) {
-      cityData.tile.surface = getSurfaceMap(cityData.tile);
-    }
-    else {
-      return null;
-    }
+    cityData.tile['surface'] = getSurfaceMap(cityData.tile);
     cityData.fileSize = uint8CityData.byteLength;
     return JSON.stringify(cityData);
   }
