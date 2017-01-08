@@ -6,13 +6,11 @@
             "es2015"
         ],
         "typeRoots": [
-            "node_modules/@types",
-            "src/ts/declaration"
+            "node_modules/@types"
         ],
         "types": [
             "node",
-            "commander",
-            "sc2tojson"
+            "commander"
         ],
         "forceConsistentCasingInFileNames": true,
         "noImplicitAny": true,
