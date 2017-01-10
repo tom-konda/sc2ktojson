@@ -20,7 +20,10 @@ const sc2toJSON = (() => {
 
         const height = 0x1f & data;
         const isWater = (data >> 7) & 1;
-        altmMap[x][y] = { 'isWater': isWater, 'height': height };
+        altmMap[x][y] = {
+          'isWater': isWater,
+          'height': height
+        };
         if (mod === 254) {
           ++x;
         }
@@ -63,19 +66,27 @@ const sc2toJSON = (() => {
     'XVAL': (chunkData: Uint8Array) => getMapData(chunkData, 2),
     'XTRF': (chunkData: Uint8Array) => getMapData(chunkData, 2),
     'XLAB': (chunkData: Uint8Array) => {
-      const labels: number[][] = Array(0x100);
+      const labels: XLABDataFormat[] = Array(0x100);
       for (let i = 0; i < 0x100; i++) {
         const current = i * 25;
-        labels[i] = Array.from(chunkData.slice(current, current + 25))
+        const currentLabelItem = chunkData.slice(current, current + 25);
+        const labelLength = getCurrentByteValue(currentLabelItem, 0);
+        const label = currentLabelItem.slice(1);
+        labels[i] = {
+          length: labelLength,
+          label: Array.from(label),
+        }
       }
       return labels;
     },
     'XMIC': (chunkData: Uint8Array) => {
       const MAX_MICROSIM_NUM = 150;
-      let microsims: number[][] = Array(MAX_MICROSIM_NUM);
+      let microsims: XMICDataFormat[] = Array(MAX_MICROSIM_NUM);
       for (let i = 0; i < MAX_MICROSIM_NUM; i++) {
         const current = i * 8;
-        const currentMicroSim = chunkData.slice(current, current + 8);
+        const currentMicroSimItem = chunkData.slice(current, current + 8);
+        const tileNum = getCurrentByteValue(currentMicroSimItem, 0);
+        const microSim = currentMicroSimItem.slice(1);
         /*
           #1 : Bus Sim
           #2 : Railway Sim
@@ -87,12 +98,17 @@ const sc2toJSON = (() => {
           #8 : Library Sim
           #9 : Marina Sim
         */
-        microsims[i] = Array.from(currentMicroSim);
+        microsims[i] = {
+          tileNum: tileNum,
+          microSim: Array.from(microSim),
+        }
       }
       return microsims;
     },
     'XTHG': (chunkData: Uint8Array) => Array.from(chunkData),
-    'XGRP': (chunkData: Uint8Array) => Array.from(chunkData),
+    'XGRP': (chunkData: Uint8Array) => {
+      return Array.from(chunkData);
+    },
     'MISC': (chunkData: Uint8Array) => {
       const MAX_MISC_NUM = 1200;
       const miscs: number[][] = Array(MAX_MISC_NUM);
@@ -318,7 +334,7 @@ const sc2toJSON = (() => {
 
   function chunkSpecificProc(chunkData: Uint8Array, chunkName: string) {
     let chunkList = Object.getOwnPropertyNames(chunkSpecificHandler);
-    if (chunkList.indexOf(chunkName) !== -1) {
+    if (chunkList.indexOf(chunkName) === -1) {
       return undefined;
     }
     else {
