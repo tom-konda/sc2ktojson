@@ -3,3 +3,5 @@
 Thumb.db
 /doc
 /lib
+/bin
+index.js
