@@ -4,8 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "npm-run-all --parallel ts:build-* --serial rollup:* test",
     "ts:build-es6": "tsc -p ./src/ts/lib",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "rollup:node": "rollup -c",
+    "rollup:legacy-browser": "rollup -c rollup.legacy.config.js",
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
   "keywords": [
     "sc2"
@@ -14,7 +17,9 @@
   "license": "MIT",
   "devDependencies": {
     "@types/commander": "^2.3.31",
+    "@types/mocha": "^2.2.36",
     "@types/node": "^6.0.52",
+    "@types/power-assert": "^1.4.29",
     "espower-typescript": "^7.0.0",
     "jsdom": "^9.4.5",
     "mocha": "^3.1.0",
