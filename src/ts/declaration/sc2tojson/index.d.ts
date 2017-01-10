@@ -1,3 +1,13 @@
+interface SC2toJSONStatic {
+  analyzeData(data: ArrayBuffer): string;
+}
+
+declare const SC2toJSON: SC2toJSONStatic;
+
+declare module 'sc2tojson' {
+  export = SC2toJSON;
+}
+
 type SC2KChunkName =
   'CNAM' | 'ALTM' | 'XBIT' | 'XBLD' | 'XTER' | 'XTXT' | 'XMIC' |
   'XZON' | 'XUND' | 'XLAB' | 'MISC' | 'XPLC' | 'XFIR' | 'TMPL' |
@@ -33,7 +43,7 @@ type tileValueFormat = ALTMTileDataFormat[][] | surfaceDataFormat[][] | number[]
 type tileKeyValueFormat = { [key: string]: tileValueFormat }
 type statisticValueFormat = number[][];
 type statisticKeyValueFormat = { [key: string]: statisticValueFormat }
-type cityValueFormat = number[][] | number[];
+type cityValueFormat = number[][] | number[] | XMICDataFormat[] | XLABDataFormat;
 type cityKeyValueFormat = { [key: string]: cityValueFormat }
 type scenarioValueFormat = number[][] | PICTDataFormat | TEXTDataFormat | SCENDataFormat;
 type scenarioKeyValueFormat = { [key: string]: cityValueFormat }
@@ -51,6 +61,15 @@ type ALTMTileDataFormat = {
   height: number
 }
 
+type XMICDataFormat = {
+  tileNum: number,
+  microSim: number[],
+}
+
+type XLABDataFormat = {
+  length: number,
+  label: number[],
+}
 
 type XBitTileDataFormat = {
   'isSalt': number,

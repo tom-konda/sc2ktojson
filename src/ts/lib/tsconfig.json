@@ -5,6 +5,14 @@
         "lib": [
             "es2015"
         ],
+        "typeRoots": [
+            "node_modules/@types",
+            "../declaration"
+        ],
+        "types": [
+            "node",
+            "sc2tojson"
+        ],
         "forceConsistentCasingInFileNames": true,
         "noImplicitAny": true,
         "noFallthroughCasesInSwitch": true,
