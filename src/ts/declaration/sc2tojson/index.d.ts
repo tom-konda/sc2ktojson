@@ -68,7 +68,15 @@ type XMICDataFormat = {
 
 type XLABDataFormat = {
   length: number,
-  label: number[],
+  label: any[],
+}
+
+type XGRPDataFormat = {
+  [key: string]: {
+    year: number[],
+    decade: number[],
+    century: number[],
+  }
 }
 
 type XBitTileDataFormat = {

@@ -107,7 +107,37 @@ const sc2toJSON = (() => {
     },
     'XTHG': (chunkData: Uint8Array) => Array.from(chunkData),
     'XGRP': (chunkData: Uint8Array) => {
-      return Array.from(chunkData);
+      const GRAPH_ITEMS = 16;
+      const GRAPH_ITEM_NAMES = [
+        'citySize', 'residents', 'commerce', 'industry',
+        'traffic', 'pollution', 'value', 'crime',
+        'power', 'water', 'health', 'education',
+        'unemployment', 'GNF', 'nationalPop', 'fedRate',
+      ]
+      const graphs: XGRPDataFormat = {};
+      for (let i = 0; i < GRAPH_ITEMS; i++) {
+        graphs[GRAPH_ITEM_NAMES[i]] = {
+          year: [],
+          decade: [],
+          century: [],
+        }
+        for (let j = 0; j < 52; j++) {
+          const current = i * 208 + j * 4;
+          const currentGraphItems = chunkData.slice(current, current + 4);
+
+          const itemValue = new DataView(currentGraphItems.buffer).getUint32(0);
+          if (j < 12) {
+            graphs[GRAPH_ITEM_NAMES[i]].year.unshift(itemValue);
+          }
+          else if (j < 32) {
+            graphs[GRAPH_ITEM_NAMES[i]].decade.unshift(itemValue);
+          }
+          else {
+            graphs[GRAPH_ITEM_NAMES[i]].century.unshift(itemValue);
+          }
+        }
+      }
+      return graphs;
     },
     'MISC': (chunkData: Uint8Array) => {
       const MAX_MISC_NUM = 1200;
@@ -412,7 +442,7 @@ const sc2toJSON = (() => {
 
     cityData.tile['surface'] = getSurfaceMap(cityData.tile);
     cityData.fileSize = uint8CityData.byteLength;
-    return JSON.stringify(cityData);
+    return JSON.stringify(cityData, null, 2);
   }
   return {
     analyzeData: analyzeData,
