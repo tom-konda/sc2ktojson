@@ -376,7 +376,7 @@ const sc2toJSON = (() => {
     return data.slice(start, start + size);
   }
 
-  function analyzeData(data: ArrayBuffer) {
+  function analyze(data: ArrayBuffer) {
     const UNCOMPRESSED_CHUNK_LIST = ['CNAM', 'ALTM', 'TMPL', 'SCEN', 'TEXT', 'PICT'];
 
     let cityData: SC2KtoJSONOutputFormat = {
@@ -445,7 +445,7 @@ const sc2toJSON = (() => {
     return JSON.stringify(cityData, null, 2);
   }
   return {
-    analyzeData: analyzeData,
+    analyze: analyze,
   }
 })();
 
