@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitUseStrict": false,
+    "strictNullChecks": true,
+    "emitBOM": false,
+    "newLine": "LF"
+  }
+}

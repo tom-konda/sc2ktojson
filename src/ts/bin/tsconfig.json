@@ -1,4 +1,5 @@
 {
+    "extends": "../base-config.tsconfig.json",
     "compilerOptions": {
         "target": "es2015",
         "module": "es2015",
@@ -12,19 +13,8 @@
             "node",
             "commander"
         ],
-        "forceConsistentCasingInFileNames": true,
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitUseStrict": false,
         "outDir": "../../../bin",
         "rootDir": ".",
-        "emitBOM": false,
-        "newLine": "LF",
         "sourceMap": false
     }
 }
