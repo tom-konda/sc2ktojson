@@ -6,8 +6,10 @@
   "scripts": {
     "build": "npm-run-all --parallel ts:build-* --serial rollup:* test",
     "ts:build-es6": "tsc -p ./src/ts/lib",
-    "rollup:node": "rollup -c",
-    "rollup:legacy-browser": "rollup -c rollup.legacy.config.js",
+    "rollup:lib-banner": "rollup -c ./rollup-configs/rollup.config.js",
+    "rollup:cli-banner": "rollup -c ./rollup-configs/rollup.cli-banner.config.js",
+    "rollup:trans-node": "rollup -c ./rollup-configs/rollup.config.cjs.js",
+    "rollup:trans-legacy-browser": "rollup -c ./rollup-configs/rollup.legacy.config.js",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "keywords": [
@@ -16,26 +18,30 @@
   "directories": {
     "test": "src/test/"
   },
-  "author": "tom-konda",
+  "author": "Tom Konda",
   "license": "MIT",
   "devDependencies": {
-    "@types/commander": "^2.3.31",
-    "@types/mocha": "^2.2.39",
-    "@types/node": "^6.0.63",
+    "@types/commander": "^2.9.1",
+    "@types/jsdom": "^2.0.30",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^6.0.72",
     "@types/power-assert": "^1.4.29",
-    "espower-typescript": "^7.0.0",
-    "jsdom": "^9.4.5",
-    "mocha": "^3.2.0",
+    "@types/tmp": "0.0.32",
+    "espower-typescript": "^8.0.0",
+    "jsdom": "^9.12.0",
+    "mocha": "^3.4.2",
     "npm-run-all": "^4.0.2",
-    "power-assert": "^1.4.2",
-    "rollup": "^0.37.2",
+    "power-assert": "^1.4.4",
+    "rollup": "^0.43.0",
     "rollup-plugin-buble": "^0.15.0",
-    "shelljs": "^0.7.6",
-    "tslint": "^4.4.2",
-    "tslint-eslint-rules": "^3.4.0",
-    "typescript": "^2.2.1"
+    "shelljs": "^0.7.8",
+    "tmp": "0.0.31",
+    "tslint": "^5.4.3",
+    "tslint-eslint-rules": "^4.1.1",
+    "typedoc": "^0.7.1",
+    "typescript": "^2.3.4"
   },
   "dependencies": {
-    "commander": "^2.9.0"
+    "commander": "^2.10.0"
   }
 }
