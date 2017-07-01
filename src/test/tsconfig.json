@@ -1,10 +1,23 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
-        "noImplicitAny": false,
-        "emitBOM": false,
-        "newLine": "LF",
-        "sourceMap": false
-    }
+  "extends": "../ts/base-config/tsconfig.json",
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "lib": [
+      "es2015",
+      "dom"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "../ts/declaration"
+    ],
+    "types": [
+      "node",
+      "jsdom",
+      "mocha",
+      "tmp",
+      "sc2tojson"
+    ],
+    "sourceMap": false
+  }
 }

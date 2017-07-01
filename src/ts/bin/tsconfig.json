@@ -2,16 +2,18 @@
     "extends": "../base-config.tsconfig.json",
     "compilerOptions": {
         "target": "es2015",
-        "module": "es2015",
+        "module": "commonjs",
         "lib": [
             "es2015"
         ],
         "typeRoots": [
-            "node_modules/@types"
+            "node_modules/@types",
+            "../declaration"
         ],
         "types": [
             "node",
-            "commander"
+            "commander",
+            "sc2tojson"
         ],
         "outDir": "../../../bin",
         "rootDir": ".",
