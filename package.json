@@ -4,13 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm-run-all --parallel ts:build-* --serial rollup:* test",
-    "ts:build-es6": "tsc -p ./src/ts/lib",
+    "prebuild": "npm run clean",
+    "build": "npm-run-all lint --parallel ts:build-* --serial rollup:*-banner rollup:trans-* ts:copy-declaration test",
+    "ts:build-bin": "tsc -p ./src/ts/bin",
+    "ts:build-lib": "tsc -p ./src/ts/lib",
+    "ts:copy-declaration": "node -e \"require('shelljs').cp('-R', './src/ts/declaration', './lib');\"",
+    "clean": "node -e \"require('shelljs').rm('-R', ['./bin','./lib', './doc', './index.js']);\"",
     "rollup:lib-banner": "rollup -c ./rollup-configs/rollup.config.js",
     "rollup:cli-banner": "rollup -c ./rollup-configs/rollup.cli-banner.config.js",
     "rollup:trans-node": "rollup -c ./rollup-configs/rollup.config.cjs.js",
     "rollup:trans-legacy-browser": "rollup -c ./rollup-configs/rollup.legacy.config.js",
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "lint": "tslint -c ./tslint.json src/**/*.ts",
+    "test": "mocha --compilers ts:espower-typescript/guess src/test/**.ts"
   },
   "keywords": [
     "sc2"
