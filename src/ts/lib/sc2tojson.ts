@@ -343,15 +343,15 @@ const sc2toJSON = (() => {
     }
   }
 
-  function getSurfaceMap(tileDatas: tileKeyValueFormat): surfaceDataFormat[][] {
+  function getSurfaceMap(tileData: tileKeyValueFormat): surfaceDataFormat[][] {
     let surfaceMap = Array(LENGTH_OF_EDGE);
     for (let x = 0; x < LENGTH_OF_EDGE; ++x) {
       surfaceMap[x] = [];
       for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
-        if (tileDatas['xbld'][x][y] !== 0) {
+        if (tileData['xbld'][x][y] !== 0) {
           surfaceMap[x][y] = 'xbld';
         }
-        else if (tileDatas['xzon'][x][y] !== 0 && tileDatas['xzon'][x][y] < 15) {
+        else if (tileData['xzon'][x][y] !== 0 && tileData['xzon'][x][y] < 15) {
           surfaceMap[x][y] = 'xzon';
         }
         else {
