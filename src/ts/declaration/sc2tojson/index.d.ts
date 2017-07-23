@@ -29,7 +29,6 @@ type SC2KSpecHandlarExistChunkName =
   'XPOP' | 'XROG' | 'XGRP' | 'ALTM' |
   'TEXT' | 'PICT' | 'SCEN' | 'TMPL'
 
-
 type SC2KtoJSONOutputFormat =
   {
     fileSize: number,
