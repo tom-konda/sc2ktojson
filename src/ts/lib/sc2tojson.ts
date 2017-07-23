@@ -222,12 +222,12 @@ const sc2toJSON = (() => {
   let getMapData = (chunk: Uint8Array, tileSize: number) => {
     const tileLength = LENGTH_OF_EDGE / tileSize;
     let map: number[][] = Array(tileLength);
-    for (let y = 0; y < tileLength; ++y) {
-      for (let x = 0; x < tileLength; ++x) {
+    for (let x = 0; x < tileLength; ++x) {
+      for (let y = 0; y < tileLength; ++y) {
         if (y === 0) {
           map[x] = [];
         }
-        map[x][y] = getCurrentByteValue(chunk, y * tileLength + x);
+        map[x][y] = getCurrentByteValue(chunk, x * tileLength + y);
       }
     }
     return map;
