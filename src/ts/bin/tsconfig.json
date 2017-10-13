@@ -1,5 +1,5 @@
 {
-    "extends": "../base-config.tsconfig.json",
+    "extends": "../base-config/tsconfig.json",
     "compilerOptions": {
         "target": "es2015",
         "module": "commonjs",
@@ -7,8 +7,8 @@
             "es2015"
         ],
         "typeRoots": [
-            "node_modules/@types",
-            "../declaration"
+          "node_modules/@types",
+          "../declaration"
         ],
         "types": [
             "node",

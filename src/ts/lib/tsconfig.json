@@ -1,5 +1,5 @@
 {
-  "extends": "../base-config.json",
+  "extends": "../base-config/tsconfig.json",
   "compilerOptions": {
     "target": "es2015",
     "module": "es2015",
