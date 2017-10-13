@@ -442,10 +442,13 @@ const sc2toJSON = (() => {
 
     cityData.tile['surface'] = getSurfaceMap(cityData.tile);
     cityData.fileSize = uint8CityData.byteLength;
-    return JSON.stringify(cityData, null, 2);
+    return cityData;
   }
+
+  const outputJSONText = (data: ArrayBuffer) => JSON.stringify(analyze(data), null, '  ');
   return {
     analyze: analyze,
+    outputJSONText: outputJSONText,
   }
 })();
 

@@ -1,5 +1,6 @@
 interface SC2toJSONStatic {
-  analyze(data: ArrayBuffer): string;
+  analyze(data: ArrayBuffer): SC2KtoJSONOutputFormat;
+  outputJSONText(data: ArrayBuffer): string;
 }
 
 declare const SC2toJSON: SC2toJSONStatic;
