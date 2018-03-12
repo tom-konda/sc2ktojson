@@ -16,7 +16,7 @@
       "jsdom",
       "mocha",
       "tmp",
-      "sc2tojson"
+      "sc2ktojson"
     ],
     "sourceMap": false
   }

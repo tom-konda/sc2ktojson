@@ -1,20 +1,44 @@
 import assert = require('assert');
 
-const checkTileValue = [
+const checkSurfaceValue = [
   'xbld',
+  'xter',
+  'xzon',
 ];
 
-const defaultMessages = {
-  'tile': 'Tile data is not analyzed correctly.',
+const checkXbitValue = {
+  isPiped: true,
+  isSalty: false,
+  isWaterCovered: true,
+  isPowered: false,
+  isWaterProvided: true,
 }
 
-export const checkTileData = (cityData: SC2KtoJSONOutputFormat, message: string = defaultMessages.tile) => {
-  const mapTile = cityData.tile['surface'] as surfaceDataFormat[][];
-  const actualTileData = [
-    cityData.tile['xbld'][54][27],
-    cityData.tile['xbld'][55][25],
-    cityData.tile['xbld'][55][26],
+const defaultMessages = {
+  'surface': 'Surface data is not analyzed correctly.',
+  'xbit': 'XBIT data is not analyzed correctly.',
+}
+
+export const checkSurfaceData = (cityData: SC2KtoJSONOutputFormat, message: string = defaultMessages.surface) => {
+  const mapSurface = cityData.tile['surface'] as surfaceDataFormat[][];
+  const actualSurfaceData = [
+    mapSurface[54][27],
+    mapSurface[54][29],
+    mapSurface[55][26],
   ];
 
-  assert.deepEqual(actualTileData, checkTileValue, message);
+  assert.deepEqual(actualSurfaceData, checkSurfaceValue, message);
+}
+
+export const checkXbitData = (cityData: SC2KtoJSONOutputFormat, message: string = defaultMessages.xbit) => {
+  const xbit = cityData.tile['xbit'] as XBITTileDataFormat[][];
+  const actualXbitData = xbit[46][51];
+  const compareXbit = {
+    isSalty : actualXbitData.isSalty,
+    isPiped : actualXbitData.isPiped,
+    isPowered : actualXbitData.isPowered,
+    isWaterCovered : actualXbitData.isWaterCovered,
+    isWaterProvided : actualXbitData.isWaterProvided,
+  }
+  assert.deepEqual(compareXbit, checkXbitValue, message);
 }
