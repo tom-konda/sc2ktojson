@@ -26,9 +26,9 @@
   "author": "Tom Konda",
   "license": "MIT",
   "devDependencies": {
-    "@types/commander": "^2.11.0",
     "@types/jsdom": "^2.0.30",
     "@types/mocha": "^2.2.41",
+    "@types/node": "^8.9.4",
     "@types/power-assert": "^1.4.29",
     "@types/tmp": "^0.0.33",
     "espower-typescript": "^8.1.0",
@@ -43,9 +43,9 @@
     "tslint": "^5.6.0",
     "tslint-eslint-rules": "^4.1.1",
     "typedoc": "^0.8.0",
-    "typescript": "^2.5.2"
+    "typescript": "2.7.2"
   },
   "dependencies": {
-    "commander": "^2.11.0"
+    "commander": "^2.14.1"
   }
 }
