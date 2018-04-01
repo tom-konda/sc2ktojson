@@ -1,12 +1,12 @@
-interface SC2toJSONStatic {
+interface SC2KtoJSONStatic {
   analyze(data: ArrayBuffer): SC2KtoJSONOutputFormat;
   outputJSONText(data: ArrayBuffer): string;
 }
 
-declare const SC2toJSON: SC2toJSONStatic;
+declare const SC2KtoJSON: SC2KtoJSONStatic;
 
-declare module 'sc2tojson' {
-  export = SC2toJSON;
+declare module 'sc2ktojson' {
+  export = SC2KtoJSON;
 }
 
 type SC2KChunkName =
@@ -39,14 +39,14 @@ type SC2KtoJSONOutputFormat =
     scenario: scenarioKeyValueFormat,
   }
 
-type tileValueFormat = ALTMTileDataFormat[][] | surfaceDataFormat[][] | number[][];
+type tileValueFormat = ALTMTileDataFormat[][] | surfaceDataFormat[][] | XBITTileDataFormat[][] | XZONTileDataFormat[][] | number[][];
 type tileKeyValueFormat = { [key: string]: tileValueFormat }
 type statisticValueFormat = number[][];
 type statisticKeyValueFormat = { [key: string]: statisticValueFormat }
 type cityValueFormat = number[][] | number[] | XMICDataFormat[] | XLABDataFormat;
 type cityKeyValueFormat = { [key: string]: cityValueFormat }
 type scenarioValueFormat = number[][] | PICTDataFormat | TEXTDataFormat | SCENDataFormat;
-type scenarioKeyValueFormat = { [key: string]: cityValueFormat }
+type scenarioKeyValueFormat = { [key: string]: cityValueFormat } |  {[key: string] : {[key: string] : number[]}}
 
 type SC2KChunkType = 'scenario' | 'city' | 'statistic' | 'tile';
 type SC2KChunkTypeValueFormat = tileValueFormat | statisticValueFormat | cityValueFormat | scenarioValueFormat;
@@ -57,8 +57,9 @@ type SC2KChunkTypeKeyValueFormat = {
 type surfaceDataFormat = 'xbld' | 'xter' | 'xzon';
 
 type ALTMTileDataFormat = {
-  isWater: number,
-  height: number
+  isInitialWater: boolean,
+  height: number,
+  binaryText: string,
 }
 
 type XMICDataFormat = {
@@ -79,12 +80,25 @@ type XGRPDataFormat = {
   }
 }
 
-type XBitTileDataFormat = {
-  'isSalt': number,
-  'isWaterCovered': number,
-  'isWaterProvided': number,
-  'isPiped': number,
-  'isPowered': number,
+type XBITTileDataFormat = {
+  isSalty: boolean,
+  isWaterCovered: boolean,
+  isWaterProvided: boolean,
+  isPiped: boolean,
+  isPowered: boolean,
+  binaryText: string,
+}
+
+type XZONTileDataFormat = {
+  zone: number,
+  corner: XZONCorner,
+}
+
+type XZONCorner = {
+  upperLeft: boolean,
+  downerLeft: boolean,
+  upperRight: boolean,
+  downerRight: boolean,
 }
 
 type PICTDataFormat = {
