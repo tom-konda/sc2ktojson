@@ -1,6 +1,6 @@
 'use strict';
 
-const sc2toJSON = (() => {
+const sc2ktoJSON = (() => {
   const LENGTH_OF_EDGE = 128;
   const CHUNK_NAME_LENGTH = 4;
   const CHUNK_SIZE_LENGTH = 4;
@@ -19,10 +19,11 @@ const sc2toJSON = (() => {
         }
 
         const height = 0x1f & data;
-        const isWater = (data >> 7) & 1;
+        const isInitialWater = Boolean((data >> 7) & 1);
         altmMap[x][y] = {
-          'isWater': isWater,
-          'height': height
+          isInitialWater: isInitialWater,
+          height: height,
+          binaryText: data.toString(2).padStart(8, '0'),
         };
         if (mod === 254) {
           ++x;
@@ -31,22 +32,25 @@ const sc2toJSON = (() => {
       return altmMap;
     },
     'XBIT': (chunkData: Uint8Array) => {
-      const xbitMap: XBitTileDataFormat[][] = Array(LENGTH_OF_EDGE);
-      for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
-        xbitMap[y] = [];
-        for (let x = 0; x < LENGTH_OF_EDGE; ++x) {
+      const xbitMap: XBITTileDataFormat[][] = Array(LENGTH_OF_EDGE);
+      for (let x = 0; x < LENGTH_OF_EDGE; ++x) {
+        for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
+          if (y === 0) {
+            xbitMap[x] = [];
+          }
           const xbitData = getCurrentByteValue(chunkData, x * LENGTH_OF_EDGE + y);
-          const isSalt = xbitData & 1;
-          const isWaterCovered = (xbitData >> 2) & 1;
-          const isWaterProvided = (xbitData >> 4) & 1;
-          const isPiped = (xbitData >> 5) & 1;
-          const isPowered = (xbitData >> 6) & 1
-          xbitMap[y][x] = {
-            'isSalt': isSalt,
-            'isWaterCovered': isWaterCovered,
-            'isWaterProvided': isWaterProvided,
-            'isPiped': isPiped,
-            'isPowered': isPowered
+          const isSalty = Boolean(xbitData & 1);
+          const isWaterCovered = Boolean((xbitData >> 2) & 1);
+          const isWaterProvided = Boolean((xbitData >> 4) & 1);
+          const isPiped = Boolean((xbitData >> 5) & 1);
+          const isPowered = Boolean((xbitData >> 6) & 1);
+          xbitMap[x][y] = {
+            isSalty: isSalty,
+            isWaterCovered: isWaterCovered,
+            isWaterProvided: isWaterProvided,
+            isPiped: isPiped,
+            isPowered: isPowered,
+            binaryText: xbitData.toString(2),
           };
         }
       }
@@ -55,7 +59,27 @@ const sc2toJSON = (() => {
     'XBLD': (chunkData: Uint8Array) => getMapData(chunkData, 1),
     'XTER': (chunkData: Uint8Array) => getMapData(chunkData, 1),
     'XTXT': (chunkData: Uint8Array) => getMapData(chunkData, 1),
-    'XZON': (chunkData: Uint8Array) => getMapData(chunkData, 1),
+    'XZON': (chunkData: Uint8Array) => {
+      const xzonMap: XZONTileDataFormat[][] = Array(LENGTH_OF_EDGE);
+      for (let x = 0; x < LENGTH_OF_EDGE; ++x) {
+        for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
+          if (y === 0) {
+            xzonMap[x] = [];
+          }
+          const xzonData = getCurrentByteValue(chunkData, x * LENGTH_OF_EDGE + y);
+          xzonMap[x][y] = {
+            zone : xzonData & 0b1111,
+            corner: {
+              upperLeft: Boolean((xzonData >> 6) & 1),
+              downerLeft: Boolean((xzonData >> 5) & 1),
+              upperRight: Boolean((xzonData >> 7) & 1),
+              downerRight: Boolean((xzonData >> 4) & 1),
+            },
+          }
+        }
+      }
+      return xzonMap;
+    },
     'XUND': (chunkData: Uint8Array) => getMapData(chunkData, 1),
     'XPLC': (chunkData: Uint8Array) => getMapData(chunkData, 4),
     'XFIR': (chunkData: Uint8Array) => getMapData(chunkData, 4),
@@ -87,17 +111,6 @@ const sc2toJSON = (() => {
         const currentMicroSimItem = chunkData.slice(current, current + 8);
         const tileNum = getCurrentByteValue(currentMicroSimItem, 0);
         const microSim = currentMicroSimItem.slice(1);
-        /*
-          #1 : Bus Sim
-          #2 : Railway Sim
-          #3 : Subway Sim
-          #4 : Wind Power Sim
-          #5 : Hydro Power Sim
-          #6 : Large Park Sim
-          #7 : Museum Sim
-          #8 : Library Sim
-          #9 : Marina Sim
-        */
         microsims[i] = {
           tileNum: tileNum,
           microSim: Array.from(microSim),
@@ -112,7 +125,7 @@ const sc2toJSON = (() => {
         'citySize', 'residents', 'commerce', 'industry',
         'traffic', 'pollution', 'value', 'crime',
         'power', 'water', 'health', 'education',
-        'unemployment', 'GNF', 'nationalPop', 'fedRate',
+        'unemployment', 'GNP', 'nationalPop', 'fedRate',
       ]
       const graphs: XGRPDataFormat = {};
       for (let i = 0; i < GRAPH_ITEMS; i++) {
@@ -156,10 +169,10 @@ const sc2toJSON = (() => {
       let textType = '';
       switch (textTypeValue) {
         case 0x80:
-          textType = 'postSelect';
+          textType = 'opening';
           break;
         case 0x81:
-          textType = 'preSelect';
+          textType = 'selection';
           break;
         default:
       }
@@ -182,7 +195,7 @@ const sc2toJSON = (() => {
       scenData['condCPop'] = new DataView(chunkData.slice(18, 22).buffer).getUint32(0);
       scenData['condIPop'] = new DataView(chunkData.slice(22, 26).buffer).getUint32(0);
       scenData['condFund'] = new DataView(chunkData.slice(26, 30).buffer).getUint32(0);
-      scenData['condLVal'] = new DataView(chunkData.slice(30, 34).buffer).getUint32(0);
+      scenData['condVal'] = new DataView(chunkData.slice(30, 34).buffer).getUint32(0);
       scenData['condEdu'] = new DataView(chunkData.slice(34, 38).buffer).getUint32(0);
       scenData['condPol'] = new DataView(chunkData.slice(38, 42).buffer).getUint32(0);
       scenData['condCri'] = new DataView(chunkData.slice(42, 46).buffer).getUint32(0);
@@ -196,7 +209,7 @@ const sc2toJSON = (() => {
       return scenData;
     },
     'PICT': (chunkData: Uint8Array): PICTDataFormat => {
-      const END_OF_PICTURE_ROW = 0;
+      const END_OF_PICTURE_ROW = 0xff;
       const width = getCurrentByteValue(chunkData, 4);
       const height = getCurrentByteValue(chunkData, 6);
       const pictureArrayData = Array.from(chunkData.slice(8));
@@ -219,7 +232,7 @@ const sc2toJSON = (() => {
     }
   }
 
-  let getMapData = (chunk: Uint8Array, tileSize: number) => {
+  const getMapData = (chunk: Uint8Array, tileSize: number) => {
     const tileLength = LENGTH_OF_EDGE / tileSize;
     let map: number[][] = Array(tileLength);
     for (let x = 0; x < tileLength; ++x) {
@@ -233,7 +246,7 @@ const sc2toJSON = (() => {
     return map;
   }
 
-  let getCurrentByteValue = (chunk: Uint8Array, pos: number) => {
+  const getCurrentByteValue = (chunk: Uint8Array, pos: number) => {
     return new DataView(chunk.slice(pos, pos + 1).buffer).getUint8(0);
   };
 
@@ -252,7 +265,7 @@ const sc2toJSON = (() => {
         },
         ''
       );
-      if (chunkList.indexOf(text) === -1) {
+      if (chunkList.includes(text) === false) {
         return '';
       }
       else {
@@ -323,19 +336,19 @@ const sc2toJSON = (() => {
   function getChunkType(name: string): SC2KChunkType {
     const SCENARIO_CHUNK_LIST = ['TMPL', 'PICT', 'TEXT', 'SCEN'];
     const STATISTIC_CHUNK_LIST = [
-      'XPLC', 'XFIR', 'XPOP', 'XROG', 'XPLT', 'XCRM', 'XVAL', 'XTRF',
+      'XPLC', 'XFIR', 'XPOP', 'XROG', 'XPLT', 'XCRM', 'XVAL', 'XTRF', 'XGRP',
     ];
     const MAP_TILE_CHUNK_LIST = [
       'ALTM', 'XBIT', 'XBLD', 'XTER', 'XTXT', 'XZON', 'XUND'
     ];
 
-    if (STATISTIC_CHUNK_LIST.indexOf(name) !== -1) {
+    if (STATISTIC_CHUNK_LIST.includes(name)) {
       return 'statistic';
     }
-    else if (MAP_TILE_CHUNK_LIST.indexOf(name) !== -1) {
+    else if (MAP_TILE_CHUNK_LIST.includes(name)) {
       return 'tile';
     }
-    else if (SCENARIO_CHUNK_LIST.indexOf(name) !== -1) {
+    else if (SCENARIO_CHUNK_LIST.includes(name)) {
       return 'scenario';
     }
     else {
@@ -348,10 +361,17 @@ const sc2toJSON = (() => {
     for (let x = 0; x < LENGTH_OF_EDGE; ++x) {
       surfaceMap[x] = [];
       for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
+        const xzon = (<XZONTileDataFormat>tileData['xzon'][x][y]);
+        let noCornersFlag = true;
+        for (const key in xzon.corner) {
+          if (xzon.corner.hasOwnProperty(key) && noCornersFlag) {
+            noCornersFlag = !(xzon.corner[key as keyof XZONCorner]);
+          }
+        }
         if (tileData['xbld'][x][y] !== 0) {
           surfaceMap[x][y] = 'xbld';
         }
-        else if (tileData['xzon'][x][y] !== 0 && tileData['xzon'][x][y] < 15) {
+        else if (noCornersFlag && xzon.zone > 0) {
           surfaceMap[x][y] = 'xzon';
         }
         else {
@@ -362,9 +382,9 @@ const sc2toJSON = (() => {
     return surfaceMap;
   }
 
-  function chunkSpecificProc(chunkData: Uint8Array, chunkName: string) {
+  function chunkSpecificProc(chunkData: Uint8Array, chunkName: SC2KChunkName) {
     let chunkList = Object.getOwnPropertyNames(chunkSpecificHandler);
-    if (chunkList.indexOf(chunkName) === -1) {
+    if (chunkList.includes(chunkName) === false) {
       return undefined;
     }
     else {
@@ -392,7 +412,7 @@ const sc2toJSON = (() => {
 
     let flag = true;
     while (flag) {
-      const chunkName = getChunkName(uint8CityData.slice(offset, offset + CHUNK_NAME_LENGTH));
+      const chunkName = getChunkName(uint8CityData.slice(offset, offset + CHUNK_NAME_LENGTH)) as SC2KChunkName | '';
       if (chunkName === '') {
         flag = false;
         continue
@@ -420,10 +440,10 @@ const sc2toJSON = (() => {
         }
 
         offset += chunkSize;
-        if (UNCOMPRESSED_CHUNK_LIST.indexOf(chunkName) === -1) {
-          chunkData = decompressChunkData(chunkData, <SC2KCompressedChunkName>chunkName);
+        if (UNCOMPRESSED_CHUNK_LIST.includes(chunkName) === false) {
+          chunkData = decompressChunkData(chunkData, chunkName as SC2KCompressedChunkName);
         }
-        let result = chunkSpecificProc(chunkData, <SC2KSpecHandlarExistChunkName>chunkName);
+        let result = chunkSpecificProc(chunkData, chunkName as SC2KSpecHandlarExistChunkName);
         if (result === undefined) {
           flag = false;
           continue;
@@ -431,7 +451,8 @@ const sc2toJSON = (() => {
         else {
           let chunkType = getChunkType(chunkName);
           if (chunkType === 'scenario' && chunkName === 'TEXT') {
-            (<SC2KChunkTypeKeyValueFormat>cityData[chunkType])[`${(<TEXTDataFormat>result).textType}Text`] = <TEXTDataFormat>result;
+            let scenerioTextData = (<scenarioKeyValueFormat>cityData[chunkType])[chunkName.toLowerCase()] || {};
+            (<scenarioKeyValueFormat>cityData[chunkType])[chunkName.toLowerCase()] = Object.assign(scenerioTextData, {[`${(<TEXTDataFormat>result).textType}`] : (<TEXTDataFormat>result).textData});
           }
           else {
             (<SC2KChunkTypeKeyValueFormat>cityData[chunkType])[chunkName.toLowerCase()] = <SC2KChunkTypeValueFormat>result;
@@ -452,4 +473,4 @@ const sc2toJSON = (() => {
   }
 })();
 
-export default sc2toJSON;
+export default sc2ktoJSON;
