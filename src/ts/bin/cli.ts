@@ -2,7 +2,7 @@ import commander = require('commander');
 import fs = require('fs');
 import { promisify } from 'util';
 const packageInfo = JSON.parse(fs.readFileSync(`./package.json`).toString());
-const sc2tojson = <SC2toJSONStatic>require('../index');
+const sc2ktojson = <SC2KtoJSONStatic>require('../index');
 
 const fileAccessCheck = (inputFile: string) => {
   return promisify(fs.access)(
@@ -14,15 +14,15 @@ const fileAccessCheck = (inputFile: string) => {
 const fileFormatCheck = (inputFile: Buffer) => {
   const uint8arr = new Uint8Array(inputFile);
   try {
-    const sc2Data = sc2tojson.outputJSONText(uint8arr.buffer as ArrayBuffer);
-    return Promise.resolve(sc2Data);
+    const sc2kData = sc2ktojson.outputJSONText(uint8arr.buffer as ArrayBuffer);
+    return Promise.resolve(sc2kData);
   }
   catch (error) {
     return Promise.reject(error);
   }
 }
 
-const convertSC2toJSON = async (inputSC2File: string, options: any) => {
+const convertSC2KtoJSON = async (inputSC2File: string, options: any) => {
   try {
     await fileAccessCheck(inputSC2File);
     const file = await promisify(fs.readFile)(inputSC2File);
@@ -54,5 +54,5 @@ commander.version(packageInfo.version)
   .option('-o, --output <outputFile>', 'Output JSON file')
   .description('Output JSON File from a SC2K city or scenario file')
   .usage('[options] <inputFile>')
-  .action(convertSC2toJSON)
+  .action(convertSC2KtoJSON)
   .parse(process.argv);
