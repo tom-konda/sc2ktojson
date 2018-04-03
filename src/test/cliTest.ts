@@ -6,7 +6,7 @@ import tmp = require('tmp');
 import cityDataCommonTest = require('./cityDataCommonTest');
 
 describe(
-  'cli SC2toJSON failure test',
+  'CLI SC2KtoJSON failure test',
   function () {
     it(
       'File is missing',
@@ -53,7 +53,7 @@ describe(
 );
 
 describe(
-  'cli SC2toJSON output test',
+  'CLI SC2KtoJSON output test',
   function () {
     let tmpFile: tmp.SynchrounousResult;
     before(
