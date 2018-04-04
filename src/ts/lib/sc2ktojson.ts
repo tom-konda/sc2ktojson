@@ -69,12 +69,7 @@ const sc2ktoJSON = (() => {
           const xzonData = getCurrentByteValue(chunkData, x * LENGTH_OF_EDGE + y);
           xzonMap[x][y] = {
             zone : xzonData & 0b1111,
-            corner: {
-              upperLeft: Boolean((xzonData >> 6) & 1),
-              downerLeft: Boolean((xzonData >> 5) & 1),
-              upperRight: Boolean((xzonData >> 7) & 1),
-              downerRight: Boolean((xzonData >> 4) & 1),
-            },
+            binaryText : xzonData.toString(2).padStart(8, '0'),
           }
         }
       }
@@ -362,12 +357,8 @@ const sc2ktoJSON = (() => {
       surfaceMap[x] = [];
       for (let y = 0; y < LENGTH_OF_EDGE; ++y) {
         const xzon = (<XZONTileDataFormat>tileData['xzon'][x][y]);
-        let noCornersFlag = true;
-        for (const key in xzon.corner) {
-          if (xzon.corner.hasOwnProperty(key) && noCornersFlag) {
-            noCornersFlag = !(xzon.corner[key as keyof XZONCorner]);
-          }
-        }
+        let noCornersFlag = (Number(`0b${xzon.binaryText}`) & 0b11110000) === 0;
+
         if (tileData['xbld'][x][y] !== 0) {
           surfaceMap[x][y] = 'xbld';
         }

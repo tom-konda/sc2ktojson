@@ -91,14 +91,7 @@ type XBITTileDataFormat = {
 
 type XZONTileDataFormat = {
   zone: number,
-  corner: XZONCorner,
-}
-
-type XZONCorner = {
-  upperLeft: boolean,
-  downerLeft: boolean,
-  upperRight: boolean,
-  downerRight: boolean,
+  binaryText: string,
 }
 
 type PICTDataFormat = {
