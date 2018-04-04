@@ -96,7 +96,7 @@ let file = fs.readFileSync(`PATH_TO_SCNFILE/test.scn`);
 
 // Convert from buffer to Uint8Array
 let uint8arr = new Uint8Array(file);
-let json = sc2ktojson.analyze(uint8arr.buffer);
+let cityData = sc2ktojson.analyze(uint8arr.buffer);
 ```
 
 ## Output Format
