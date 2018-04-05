@@ -3,6 +3,10 @@
   "bin": {
     "sc2ktojson": "./bin/cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tom-konda/sc2ktojson.git"
+  },
   "version": "0.0.1",
   "description": "This JavaScript library converts from .sc2 (SC2K city file) or .scn (SC2K scenario file) file to JSON",
   "main": "index.js",
