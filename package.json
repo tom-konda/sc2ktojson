@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/tom-konda/sc2ktojson.git"
   },
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This JavaScript library converts from .sc2 (SC2K city file) or .scn (SC2K scenario file) file to JSON",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,9 @@
     "test": "mocha --require espower-typescript/guess src/test/**.ts"
   },
   "keywords": [
-    "sc2", "SC2K"
+    "sc2", "scn", "SC2K",
+    "json",
+    "convert"
   ],
   "directories": {
     "test": "src/test/"
