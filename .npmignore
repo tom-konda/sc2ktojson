@@ -1,0 +1,6 @@
+/node_modules
+.DS_Store
+Thumb.db
+/src
+/rollup-configs
+tslint.json
