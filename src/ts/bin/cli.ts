@@ -1,7 +1,7 @@
 import commander = require('commander');
 import fs = require('fs');
 import { promisify } from 'util';
-const packageInfo = JSON.parse(fs.readFileSync(`./package.json`).toString());
+const packageInfo = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`).toString());
 const sc2ktojson = <SC2KtoJSONStatic>require('../index');
 
 const fileAccessCheck = (inputFile: string) => {
