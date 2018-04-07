@@ -4,3 +4,4 @@ Thumb.db
 /src
 /rollup-configs
 tslint.json
+yarn-error.log
