@@ -1,5 +1,5 @@
 {
-  "extends": "../base-config/tsconfig.json",
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "target": "es2015",
     "module": "es2015",
@@ -8,7 +8,7 @@
     ],
     "typeRoots": [
       "node_modules/@types",
-      "../declaration"
+      "../../../declaration"
     ],
     "types": [
       "node",
