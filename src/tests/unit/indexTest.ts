@@ -1,13 +1,13 @@
 'use strict';
-const SC2KtoJSON = <SC2KtoJSONStatic>require('../../');
-
-import cityDataCommonTest = require('./cityDataCommonTest');
+import SC2KtoJSON from '../../ts/lib/sc2ktojson';
+import cityDataCommonTest = require('../common/cityDataCommonTest');
 import fs = require('fs');
+const fixturesDir = `${__dirname}/../fixtures`;
 
 describe(
   'index.js SC2KtoJSON',
   function () {
-    const file = fs.readFileSync(`${__dirname}/fixture/test_city.sc2`);
+    const file = fs.readFileSync(`${fixturesDir}/test_city.sc2`);
     const cityData = SC2KtoJSON.analyze(new Uint8Array(file).buffer);
 
     describe(

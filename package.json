@@ -12,7 +12,7 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "npm-run-all lint --parallel ts:build-* --serial rollup:*-banner rollup:trans-* ts:copy-declaration test",
+    "build": "npm-run-all lint test --parallel ts:build-* --serial rollup:*-banner rollup:trans-* test:*",
     "postbuild": "npm run doc-gen",
     "ts:build-bin": "tsc -p ./src/ts/bin",
     "ts:build-lib": "tsc -p ./src/ts/lib",
@@ -23,7 +23,8 @@
     "rollup:trans-legacy-browser": "rollup -c ./rollup-configs/rollup.legacy.config.js",
     "doc-gen": "typedoc --name SC2KtoJSON --readme ./README.md --excludeExternals --target es2017 --module es2015 --includeDeclarations --out ./doc ./declaration/sc2ktojson/index.d.ts",
     "lint": "tslint -c ./tslint.json src/**/*.ts",
-    "test": "mocha --require espower-typescript/guess src/test/**.ts"
+    "test": "cross-env TS_NODE_TRANSPILE_ONLY=1 mocha --require espower-typescript/guess src/tests/unit/**.ts",
+    "test:cli": "cross-env TS_NODE_TRANSPILE_ONLY=1 mocha --require espower-typescript/guess src/tests/e2e/**.ts"
   },
   "keywords": [
     "sc2",
@@ -33,7 +34,7 @@
     "convert"
   ],
   "directories": {
-    "test": "src/test/"
+    "test": "src/tests/"
   },
   "author": "Tom Konda",
   "license": "MIT",

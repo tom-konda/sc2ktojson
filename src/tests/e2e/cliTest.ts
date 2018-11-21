@@ -3,7 +3,8 @@ import assert = require('assert');
 import childProc = require('child_process');
 import fs = require('fs');
 import tmp = require('tmp');
-import cityDataCommonTest = require('./cityDataCommonTest');
+import cityDataCommonTest = require('../common/cityDataCommonTest');
+const fixturesDir = `${__dirname}/../fixtures`;
 
 describe(
   'CLI SC2KtoJSON failure test',
@@ -15,7 +16,7 @@ describe(
           'node',
           [
             './bin/cli.js',
-            `${__dirname}/fixture/c.cty`,
+            `${fixturesDir}/c.cty`,
           ]
         );
         assert.notEqual(result.stderr.length, 0, 'File check is not worked.');
@@ -28,7 +29,7 @@ describe(
           'node',
           [
             './bin/cli.js',
-            `${__dirname}/fixture/wrong.sc2`,
+            `${fixturesDir}/wrong.sc2`,
           ]
         );
         assert.notEqual(result.stderr.length, 0, 'File format is not checked.');
@@ -41,7 +42,7 @@ describe(
           'node',
           [
             './bin/cli.js',
-            `${__dirname}/fixture/test_city.sc2`,
+            `${fixturesDir}/test_city.sc2`,
             `-o`,
             `foobar/hogehoge.json`
           ]
@@ -71,7 +72,7 @@ describe(
           'node',
           [
             './bin/cli.js',
-            `${__dirname}/fixture/test_city.sc2`,
+            `${fixturesDir}/test_city.sc2`,
           ]
         );
         const cityData = <SC2KtoJSONOutputFormat>JSON.parse(result.stdout);
@@ -85,7 +86,7 @@ describe(
           'node',
           [
             './bin/cli.js',
-            `${__dirname}/fixture/test_city.sc2`,
+            `${fixturesDir}/test_city.sc2`,
             '-o',
             `${tmpFile.name}`,
           ]
