@@ -4,4 +4,6 @@ Thumb.db
 /src
 /rollup-configs
 tslint.json
+tsconfig.json
 yarn-error.log
+.travis.yml
