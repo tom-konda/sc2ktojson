@@ -19,7 +19,7 @@ describe(
             `${fixturesDir}/c.cty`,
           ]
         );
-        assert.notEqual(result.stderr.length, 0, 'File check is not worked.');
+        assert.notStrictEqual(result.stderr.length, 0, 'File check is not worked.');
       }
     )
     it(
@@ -32,7 +32,7 @@ describe(
             `${fixturesDir}/wrong.sc2`,
           ]
         );
-        assert.notEqual(result.stderr.length, 0, 'File format is not checked.');
+        assert.notStrictEqual(result.stderr.length, 0, 'File format is not checked.');
       }
     )
     it(
@@ -47,7 +47,7 @@ describe(
             `foobar/hogehoge.json`
           ]
         );
-        assert.notEqual(result.stderr.length, 0, `Output error isn't checked.`);
+        assert.notStrictEqual(result.stderr.length, 0, `Output error isn't checked.`);
       }
     )
   }

@@ -8,7 +8,7 @@ describe(
   'index.js SC2KtoJSON',
   function () {
     const file = fs.readFileSync(`${fixturesDir}/test_city.sc2`);
-    const cityData = SC2KtoJSON.analyze(new Uint8Array(file).buffer);
+    const cityData = SC2KtoJSON.analyze(new Uint8Array(file).buffer as ArrayBuffer);
 
     describe(
       'Check tile data',
