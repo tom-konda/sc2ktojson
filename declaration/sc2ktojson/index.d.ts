@@ -5,7 +5,7 @@ interface SC2KtoJSONStatic {
 
 declare const SC2KtoJSON: SC2KtoJSONStatic;
 
-declare module 'sc2ktojson' {
+declare module '@tom-konda/sc2ktojson' {
   export = SC2KtoJSON;
 }
 
