@@ -10,7 +10,7 @@
   "version": "0.0.3",
   "description": "This JavaScript library converts from .sc2 (SC2K city file) or .scn (SC2K scenario file) file to JSON",
   "main": "index.js",
-  "types": "./lib/declaration/sc2ktojson/index.d.ts",
+  "types": "./declaration/sc2ktojson/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
     "build": "npm-run-all lint test --parallel ts:build-* --serial rollup:*-banner rollup:trans-* test:*",
