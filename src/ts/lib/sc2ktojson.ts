@@ -21,8 +21,7 @@ const sc2ktoJSON = (() => {
         const height = 0x1f & data;
         const isInitialWater = Boolean((data >> 7) & 1);
         altmMap[x][y] = {
-          isInitialWater: isInitialWater,
-          height: height,
+          isInitialWater, height,
           binaryText: data.toString(2).padStart(8, '0'),
         };
         if (mod === 254) {
@@ -45,11 +44,8 @@ const sc2ktoJSON = (() => {
           const isPiped = Boolean((xbitData >> 5) & 1);
           const isPowered = Boolean((xbitData >> 6) & 1);
           xbitMap[x][y] = {
-            isSalty: isSalty,
-            isWaterCovered: isWaterCovered,
-            isWaterProvided: isWaterProvided,
-            isPiped: isPiped,
-            isPowered: isPowered,
+            isSalty, isWaterCovered,
+            isWaterProvided, isPiped, isPowered,
             binaryText: xbitData.toString(2),
           };
         }
@@ -107,7 +103,7 @@ const sc2ktoJSON = (() => {
         const tileNum = getCurrentByteValue(currentMicroSimItem, 0);
         const microSim = currentMicroSimItem.slice(1);
         microsims[i] = {
-          tileNum: tileNum,
+          tileNum,
           microSim: Array.from(microSim),
         }
       }
@@ -172,10 +168,7 @@ const sc2ktoJSON = (() => {
         default:
       }
       const textData = Array.from(chunkData.slice(1));
-      return {
-        textType: textType,
-        textData: textData,
-      }
+      return {textType, textData}
     },
     'SCEN': (chunkData: Uint8Array): SCENDataFormat => {
       let scenData: { [key: string]: number | { x: number, y: number } } = {};
@@ -208,22 +201,18 @@ const sc2ktoJSON = (() => {
       const width = getCurrentByteValue(chunkData, 4);
       const height = getCurrentByteValue(chunkData, 6);
       const pictureArrayData = Array.from(chunkData.slice(8));
-      let pictureData = [];
+      let picture = [];
       let offset = 0;
       let findIndex = pictureArrayData.indexOf(END_OF_PICTURE_ROW, offset);
 
       while (findIndex !== -1) {
         const row = pictureArrayData.slice(offset, findIndex);
-        pictureData.push(row);
+        picture.push(row);
         offset = findIndex + 1;
         findIndex = pictureArrayData.indexOf(END_OF_PICTURE_ROW, offset);
       }
 
-      return {
-        width: width,
-        height: height,
-        picture: pictureData,
-      }
+      return {width, height, picture,}
     }
   }
 
@@ -443,7 +432,10 @@ const sc2ktoJSON = (() => {
           let chunkType = getChunkType(chunkName);
           if (chunkType === 'scenario' && chunkName === 'TEXT') {
             let scenerioTextData = (<scenarioKeyValueFormat>cityData[chunkType])[chunkName.toLowerCase()] || {};
-            (<scenarioKeyValueFormat>cityData[chunkType])[chunkName.toLowerCase()] = Object.assign(scenerioTextData, {[`${(<TEXTDataFormat>result).textType}`] : (<TEXTDataFormat>result).textData});
+            (<scenarioKeyValueFormat>cityData[chunkType])[chunkName.toLowerCase()] = {
+              ...scenerioTextData,
+              ...{[`${(<TEXTDataFormat>result).textType}`] : (<TEXTDataFormat>result).textData}
+            };
           }
           else {
             (<SC2KChunkTypeKeyValueFormat>cityData[chunkType])[chunkName.toLowerCase()] = <SC2KChunkTypeValueFormat>result;
