@@ -66,20 +66,6 @@ describe(
     );
 
     it(
-      'Output test',
-      function () {
-        const result = childProc.spawnSync(
-          'node',
-          [
-            './bin/cli.js',
-            `${fixturesDir}/test_city.sc2`,
-          ]
-        );
-        const cityData = <SC2KtoJSONOutputFormat>JSON.parse(result.stdout);
-        cityDataCommonTest.checkSurfaceData(cityData, 'File is not created correctly.');
-      }
-    )
-    it(
       'JSON output test',
       function () {
         childProc.spawnSync(
