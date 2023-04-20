@@ -1,10 +1,10 @@
 import { readFileSync } from 'fs';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { defineConfig } from 'vite';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageInfo = JSON.parse(readFileSync(`${__dirname}/../package.json`).toString());
-
 const bannerText = `
 /**
  * SC2KtoJSON ver ${packageInfo.version}
@@ -13,19 +13,17 @@ const bannerText = `
  */
 `
 
-export default {
-  input: './temp/lib/sc2ktojson.js',
-  external: ['fs'],
-  output: [
-    {
-      banner: bannerText.trim(),
-      file: 'lib/sc2ktojson.js',
-      format: 'es'
+/** @type {import('vite').UserConfig} */
+export default defineConfig({
+  esbuild: {
+    banner: bannerText.trim(),
+  },
+  build: {
+    outDir: '../../../lib',
+    lib: {
+      entry: './sc2ktojson.ts',
+      formats: ['es', 'cjs'],
     },
-    {
-      banner: bannerText.trim(),
-      file: 'lib/sc2ktojson.cjs',
-      format: 'commonjs',
-    },
-  ],
-}
+    minify: false,
+  }
+});

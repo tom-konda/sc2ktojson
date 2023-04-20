@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { defineConfig } from 'vite';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageInfo = JSON.parse(readFileSync(`${__dirname}/../package.json`).toString());
@@ -13,13 +14,21 @@ const bannerText = `
  */
 `
 
-export default {
-  input: './temp/bin/bin/cli.js',
-  external: ['commander', 'fs', 'fs/promises', 'path', 'url'],
-  output: [
-    {
-      banner: bannerText.trim(),
-      file: 'bin/cli.js', format: 'es',
+/** @type {import('vite').UserConfig} */
+export default defineConfig({
+  esbuild: {
+    banner: bannerText.trim(),
+  },
+  build: {
+    outDir: '../../../bin',
+    lib: {
+      entry: './cli.ts',
+      formats: ['es'],
+      fileName: 'cli',
     },
-  ],
-}
+    rollupOptions: {
+      external: ['commander', 'fs', 'fs/promises', 'path', 'url'],
+    },
+    minify: false,
+  },
+});
