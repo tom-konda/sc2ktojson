@@ -1,15 +1,28 @@
 {
   "name": "@tom-konda/sc2ktojson",
-  "bin": {
-    "sc2ktojson": "./bin/cli.js"
-  },
+  "author": "Tom Konda",
+  "version": "0.0.5",
+  "description": "This JavaScript library converts from .sc2 (SC2K city file) or .scn (SC2K scenario file) file to JSON",
+  "license": "MIT",
+  "keywords": [
+    "sc2",
+    "scn",
+    "SC2K",
+    "json",
+    "convert"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/tom-konda/sc2ktojson.git"
   },
-  "version": "0.0.4",
-  "description": "This JavaScript library converts from .sc2 (SC2K city file) or .scn (SC2K scenario file) file to JSON",
-  "main": "index.js",
+  "type": "module",
+  "exports": {
+    "import": "./lib/sc2ktojson.js",
+    "require": "./lib/sc2ktojson.cjs.js"
+  },
+  "bin": {
+    "sc2ktojson": "./bin/cli.js"
+  },
   "types": "./declaration/sc2ktojson/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
@@ -25,18 +38,9 @@
     "test": "vitest run --dir ./tests/unit",
     "test:cli": "vitest run --dir ./tests/e2e"
   },
-  "keywords": [
-    "sc2",
-    "scn",
-    "SC2K",
-    "json",
-    "convert"
-  ],
-  "directories": {
-    "test": "src/tests/"
+  "engines": {
+    "node": ">=18.12.0"
   },
-  "author": "Tom Konda",
-  "license": "MIT",
   "devDependencies": {
     "@types/node": "^18",
     "@types/tmp": "^0.2.3",
