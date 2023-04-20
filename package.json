@@ -13,19 +13,17 @@
   "types": "./declaration/sc2ktojson/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "npm-run-all lint test --parallel ts:build-* --serial rollup:*-banner rollup:trans-* test:*",
+    "build": "npm-run-all lint test --parallel ts:build-* --serial rollup:*-banner test:*",
     "postbuild": "npm run doc-gen",
     "ts:build-bin": "tsc -p ./src/ts/bin",
     "ts:build-lib": "tsc -p ./src/ts/lib",
-    "clean": "node -e \"require('shelljs').rm('-R', ['./bin','./lib', './doc', './index.js']);\"",
+    "clean": "node -e \"require('shelljs').rm('-R', ['./bin','./lib', './doc', './temp']);\"",
     "rollup:lib-banner": "rollup -c ./rollup-configs/rollup.config.js",
     "rollup:cli-banner": "rollup -c ./rollup-configs/rollup.cli-banner.config.js",
-    "rollup:trans-node": "rollup -c ./rollup-configs/rollup.config.cjs.js",
-    "rollup:trans-legacy-browser": "rollup -c ./rollup-configs/rollup.legacy.config.js",
-    "doc-gen": "typedoc --name SC2KtoJSON --readme ./README.md --excludeExternals --target es2017 --module es2015 --includeDeclarations --out ./doc ./declaration/sc2ktojson/index.d.ts",
-    "lint": "tslint -c ./tslint.json src/**/*.ts",
-    "test": "cross-env TS_NODE_TRANSPILE_ONLY=1 mocha --require espower-typescript/guess src/tests/unit/**.ts",
-    "test:cli": "cross-env TS_NODE_TRANSPILE_ONLY=1 mocha --require espower-typescript/guess src/tests/e2e/**.ts"
+    "doc-gen": "typedoc --excludeExternals",
+    "lint": "eslint src/**/*.ts",
+    "test": "vitest run --dir ./tests/unit",
+    "test:cli": "vitest run --dir ./tests/e2e"
   },
   "keywords": [
     "sc2",

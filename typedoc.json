@@ -1,0 +1,7 @@
+{
+  "name": "SC2KtoJSON",
+  "readme": "./README.md",
+  "tsconfig": "./src/ts/lib",
+  "entryPoints": ["./declaration/sc2ktojson/index.d.ts"],
+  "out": "./doc"
+}

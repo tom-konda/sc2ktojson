@@ -1,6 +1,9 @@
-import * as fs from 'fs';
+import { readFileSync } from 'fs';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const packageInfo = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`).toString())
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const packageInfo = JSON.parse(readFileSync(`${__dirname}/../package.json`).toString());
 const bannerText = `
 #!/usr/bin/env node
 /**
@@ -11,13 +14,12 @@ const bannerText = `
 `
 
 export default {
-  input: './bin/cli.js',
+  input: './temp/bin/bin/cli.js',
+  external: ['commander', 'fs', 'fs/promises', 'path', 'url'],
   output: [
     {
       banner: bannerText.trim(),
-      file: 'bin/cli.js',
-      format: 'cjs'
+      file: 'bin/cli.js', format: 'es',
     },
   ],
-  external: ['fs'],
 }
