@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "lib": [
+      "es2022",
+    ],
+    "types": [
+      "node",
+      "jest",
+      "tmp",
+    ],
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "sourceMap": false
+  }
+}

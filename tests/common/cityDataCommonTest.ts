@@ -1,6 +1,7 @@
-import assert = require('assert');
+import type { SC2KtoJSONOutputFormat, XBITTileDataFormat, surfaceDataFormat } from '../../declaration/sc2ktojson'
+import { expect } from 'vitest';
 
-const checkSurfaceValue = [
+const checkSurfaceValue: surfaceDataFormat[] = [
   'xbld',
   'xter',
   'xzon',
@@ -14,12 +15,7 @@ const checkXbitValue = {
   isWaterProvided: true,
 }
 
-const defaultMessages = {
-  'surface': 'Surface data is not analyzed correctly.',
-  'xbit': 'XBIT data is not analyzed correctly.',
-}
-
-export const checkSurfaceData = (cityData: SC2KtoJSONOutputFormat, message: string = defaultMessages.surface) => {
+export const checkSurfaceData = (cityData: SC2KtoJSONOutputFormat) => {
   const mapSurface = cityData.tile['surface'] as surfaceDataFormat[][];
   const actualSurfaceData = [
     mapSurface[54][27],
@@ -27,10 +23,10 @@ export const checkSurfaceData = (cityData: SC2KtoJSONOutputFormat, message: stri
     mapSurface[55][26],
   ];
 
-  assert.deepEqual(actualSurfaceData, checkSurfaceValue, message);
+  expect(actualSurfaceData).toStrictEqual(checkSurfaceValue);
 }
 
-export const checkXbitData = (cityData: SC2KtoJSONOutputFormat, message: string = defaultMessages.xbit) => {
+export const checkXbitData = (cityData: SC2KtoJSONOutputFormat) => {
   const xbit = cityData.tile['xbit'] as XBITTileDataFormat[][];
   const actualXbitData = xbit[46][51];
   const compareXbit = {
@@ -40,5 +36,5 @@ export const checkXbitData = (cityData: SC2KtoJSONOutputFormat, message: string 
     isWaterCovered : actualXbitData.isWaterCovered,
     isWaterProvided : actualXbitData.isWaterProvided,
   }
-  assert.deepEqual(compareXbit, checkXbitValue, message);
+  expect(compareXbit).toStrictEqual(checkXbitValue);
 }
