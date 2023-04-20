@@ -1,20 +1,22 @@
-import commander = require('commander');
-import fs = require('fs');
-import { promisify } from 'util';
-const packageInfo = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`).toString());
-const sc2ktojson = <SC2KtoJSONStatic>require('../index');
+import { program } from 'commander';
+import {constants as fsConstants, readFileSync} from 'fs';
+import { access, readFile, writeFile } from 'fs/promises';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { outputJSONText } from '../lib/sc2ktojson';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const packageInfo = JSON.parse(readFileSync(`${__dirname}/../package.json`).toString());
 
 const fileAccessCheck = (inputFile: string) => {
-  return promisify(fs.access)(
-    inputFile,
-    fs.constants.R_OK
-  );
+  return access(inputFile, fsConstants.R_OK);
 }
 
 const fileFormatCheck = (inputFile: Buffer) => {
   const uint8arr = new Uint8Array(inputFile);
   try {
-    const sc2kData = sc2ktojson.outputJSONText(uint8arr.buffer as ArrayBuffer);
+    const sc2kData = outputJSONText(uint8arr.buffer as ArrayBuffer);
     return Promise.resolve(sc2kData);
   }
   catch (error) {
@@ -22,13 +24,14 @@ const fileFormatCheck = (inputFile: Buffer) => {
   }
 }
 
-const convertSC2KtoJSON = async (inputSC2File: string, options: any) => {
+const convertSC2KtoJSON = async(...args: [string, {output: string}]) => {
+  const [inputSC2File, options] = args;
   try {
     await fileAccessCheck(inputSC2File);
-    const file = await promisify(fs.readFile)(inputSC2File);
+    const file = await readFile(inputSC2File);
     const JSONText = await fileFormatCheck(file);
     if (options.output) {
-      await promisify(fs.writeFile)(options.output, JSONText);
+      await writeFile(options.output, JSONText);
       process.stdout.write(`${options.output} was created successfully.\n`);
     }
     else {
@@ -42,17 +45,21 @@ const convertSC2KtoJSON = async (inputSC2File: string, options: any) => {
       process.stderr.write(`-1 : ${error.message}\n`);
       process.exit(-1);
     }
-    else if (error as NodeJS.ErrnoException instanceof Error) {
-      process.stderr.write(`${error.errno} : ${error.message}\n`);
-      process.exit(error.errno);
+    else if (error instanceof Error) {
+      process.stderr.write(`${(<NodeJS.ErrnoException>error).errno} : ${error.message}\n`);
+      process.exit((<NodeJS.ErrnoException>error).errno);
     }
   }
 };
 
-commander.version(packageInfo.version)
-  .command('<inputFile>', 'Path to a SC2K .sc2 or .scn file')
-  .option('-o, --output <outputFile>', 'Output JSON file')
-  .description('Output JSON File from a SC2K city or scenario file')
-  .usage('[options] <inputFile>')
-  .action(convertSC2KtoJSON)
-  .parse(process.argv);
+async function main() {
+  program.version(packageInfo.version, '-v, --version', 'Output the current version')
+    .arguments('<inputFile>')
+    .requiredOption('-o, --output <outputFile>', 'Output JSON file')
+    .description('Output JSON File from a SC2K city or scenario file')
+    .usage('[options] <inputFile>')
+    .action(convertSC2KtoJSON)
+  return await program.parseAsync();
+}
+
+main();
