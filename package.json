@@ -52,7 +52,7 @@
     "shelljs": "^0.8.5",
     "tmp": "^0.2.1",
     "typedoc": "^0.24.4",
-    "typescript": "^5.0.4",
+    "typescript": "5.0.4",
     "vite": "^4.2.2",
     "vitest": "^0.30.1"
   },
