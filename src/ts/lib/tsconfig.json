@@ -6,16 +6,9 @@
     "lib": [
       "es2022"
     ],
-    "typeRoots": [
-      "../../../declaration"
-    ],
-    "types": [
-      "sc2ktojson"
-    ],
-    "outDir": "../../../temp/lib",
-    "rootDir": ".",
-    "moduleResolution": "bundler",
     "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
     "sourceMap": false
   }
 }
