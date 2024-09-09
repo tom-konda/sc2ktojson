@@ -1,6 +1,6 @@
 'use strict';
-import { spawnSync } from 'child_process';
-import { readFileSync, unlinkSync } from 'fs';
+import { spawnSync } from 'node:child_process';
+import { readFileSync, unlinkSync } from 'node:fs';
 import { fileSync, FileResult } from 'tmp';
 import { SC2KtoJSONOutputFormat } from '../../declaration/sc2ktojson';
 import { checkSurfaceData, checkXbitData } from '../common/cityDataCommonTest';

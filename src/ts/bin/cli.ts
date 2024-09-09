@@ -1,8 +1,8 @@
 import { program } from 'commander';
-import {constants as fsConstants, readFileSync} from 'fs';
-import { access, readFile, writeFile } from 'fs/promises';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import {constants as fsConstants, readFileSync} from 'node:fs';
+import { access, readFile, writeFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { outputJSONText } from '../lib/sc2ktojson';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
