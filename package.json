@@ -45,18 +45,18 @@
   "devDependencies": {
     "@types/node": "^20",
     "@types/tmp": "^0.2.3",
-    "@typescript-eslint/eslint-plugin": "^6",
-    "@typescript-eslint/parser": "^6",
+    "@typescript-eslint/eslint-plugin": "^8",
+    "@typescript-eslint/parser": "^8",
     "eslint": "^8",
-    "npm-run-all": "^4.1.5",
+    "npm-run-all2": "^6",
     "shelljs": "^0.8.5",
-    "tmp": "^0.2.1",
-    "typedoc": "^0.25",
-    "typescript": "^5.2",
-    "vite": "^4",
-    "vitest": "^0.34"
+    "tmp": "^0.2.3",
+    "typedoc": "^0.26",
+    "typescript": "~5.6",
+    "vite": "^5",
+    "vitest": "^1"
   },
   "dependencies": {
-    "commander": "^11"
+    "commander": "^12"
   }
 }
