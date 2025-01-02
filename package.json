@@ -28,7 +28,7 @@
     "prebuild": "npm run clean",
     "build": "npm-run-all lint test --parallel ts:build-* test:*",
     "postbuild": "npm run doc-gen",
-    "ts:build-bin": "vite build -c ./vite-configs/vite.cli-config.js ./src/ts/bin",
+    "ts:build-bin": "node ./vite-configs/vite.cli-config.js",
     "ts:build-lib": "vite build -c ./vite-configs/vite.config.js ./src/ts/lib",
     "clean": "node -e \"require('shelljs').rm('-R', ['./bin','./lib', './doc']);\"",
     "doc-gen": "typedoc --excludeExternals",
