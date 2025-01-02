@@ -58,41 +58,41 @@ describe(
   }
 )
 
-// describe(
-//   'cli SC2KtoJSON output test',
-//   () => {
-//     let tmpFile: FileResult;
-//     beforeEach(
-//       () => {
-//         tmpFile = fileSync({
-//           prefix: `sc2tojson-${Date.now()}`,
-//         })
-//       }
-//     );
+describe(
+  'cli SC2KtoJSON output test',
+  () => {
+    let tmpFile: FileResult;
+    beforeEach(
+      () => {
+        tmpFile = fileSync({
+          prefix: `sc2tojson-${Date.now()}`,
+        })
+      }
+    );
 
-//     it(
-//       'JSON output test',
-//       () => {
-//         spawnSync(
-//           'node',
-//           [
-//             './bin/cli.cjs',
-//             `${fixturesDir}/test_city.cty`,
-//             '-o',
-//             `${tmpFile.name}`,
-//           ]
-//         );
-//         const json = readFileSync(`${tmpFile.name}`, 'utf8');
-//         const cityData = JSON.parse(json) as SC2KtoJSONOutputFormat;
-//         checkSurfaceData(cityData);
-//         checkXbitData(cityData);
-//       }
-//     )
+    it(
+      'JSON output test',
+      () => {
+        spawnSync(
+          'node',
+          [
+            './bin/cli.js',
+            `${fixturesDir}/test_city.sc2`,
+            '-o',
+            `${tmpFile.name}`,
+          ]
+        );
+        const json = readFileSync(`${tmpFile.name}`, 'utf8');
+        const cityData = JSON.parse(json) as SC2KtoJSONOutputFormat;
+        checkSurfaceData(cityData);
+        checkXbitData(cityData);
+      }
+    )
 
-//     afterEach(
-//       () => {
-//         unlinkSync(`${tmpFile.name}`);
-//       }
-//     )
-//   }
-// )
+    afterEach(
+      () => {
+        unlinkSync(`${tmpFile.name}`);
+      }
+    )
+  }
+)
