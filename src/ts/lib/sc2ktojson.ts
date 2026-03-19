@@ -1,6 +1,7 @@
 'use strict';
 
 import type { ALTMTileDataFormat, PICTDataFormat, SC2KChunkName, SC2KChunkType, SC2KChunkTypeKeyValueFormat, SC2KChunkTypeValueFormat, SC2KCompressedChunkName, SC2KSpecHandlarExistChunkName, SC2KtoJSONOutputFormat, SCENDataFormat, TEXTDataFormat, XBITTileDataFormat, XGRPDataFormat, XLABDataFormat, XMICDataFormat, XZONTileDataFormat, scenarioKeyValueFormat, surfaceDataFormat, tileKeyValueFormat } from "../../../declaration/sc2ktojson";
+import { decompressChunkData } from "./rleDecompress";
 
 const LENGTH_OF_EDGE = 128;
 const CHUNK_NAME_LENGTH = 4;
@@ -271,51 +272,6 @@ function getChuckSize(buffer: Uint8Array): number {
     }
   }
   return -1;
-}
-
-function decompressChunkData(chunkData: Uint8Array, chunkName: SC2KCompressedChunkName): Uint8Array {
-  const decompressedChunkSize = {
-    MISC: 4800,
-    XTER: 16384,
-    XBLD: 16384,
-    XZON: 16384,
-    XUND: 16384,
-    XTXT: 16384,
-    XLAB: 6400,
-    XMIC: 1200,
-    XTHG: 480,
-    XBIT: 16384,
-    XTRF: 4096,
-    XPLT: 4096,
-    XVAL: 4096,
-    XCRM: 4096,
-    XPLC: 1024,
-    XFIR: 1024,
-    XPOP: 1024,
-    XROG: 1024,
-    XGRP: 3328,
-  }
-
-  const decompressedChunkData = new Uint8Array(decompressedChunkSize[chunkName]);
-  for (let i = 0, lastOffset = 0, length = chunkData.byteLength; i < length;) {
-    const currentValue = getCurrentByteValue(chunkData, i);
-    if (currentValue > 128) {
-      const length = currentValue - 127;
-      ++i;
-      decompressedChunkData.fill(getCurrentByteValue(chunkData, i), lastOffset, lastOffset + length);
-      lastOffset += length;
-      ++i;
-    }
-    else {
-      const length = currentValue;
-      i++;
-      const data = chunkData.slice(i, i + length);
-      decompressedChunkData.set(data, lastOffset);
-      lastOffset += length;
-      i += length;
-    }
-  }
-  return decompressedChunkData;
 }
 
 function getChunkType(name: string): SC2KChunkType {
